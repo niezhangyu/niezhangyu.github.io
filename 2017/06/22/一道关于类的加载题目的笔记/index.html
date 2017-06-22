@@ -93,16 +93,16 @@
 
 
 
-<meta name="description" content="##第一种情况 public class TmpClassLoader { public static void main(String args[]){       Singleton singleton = Singleton.getSingleton();       System.out.println(&amp;quot;counter1=&amp;quot;+singleton.counter1);">
+<meta name="description" content="第一种情况public class TmpClassLoader { public static void main(String args[]){       Singleton singleton = Singleton.getSingleton();       System.out.println(&amp;quot;counter1=&amp;quot;+singleton.counter1);">
 <meta property="og:type" content="article">
 <meta property="og:title" content="一道关于类的加载题目的笔记">
 <meta property="og:url" content="http://yoursite.com/2017/06/22/一道关于类的加载题目的笔记/index.html">
 <meta property="og:site_name" content="章鱼碎碎说">
-<meta property="og:description" content="##第一种情况 public class TmpClassLoader { public static void main(String args[]){       Singleton singleton = Singleton.getSingleton();       System.out.println(&amp;quot;counter1=&amp;quot;+singleton.counter1);">
-<meta property="og:updated_time" content="2017-06-22T08:55:45.712Z">
+<meta property="og:description" content="第一种情况public class TmpClassLoader { public static void main(String args[]){       Singleton singleton = Singleton.getSingleton();       System.out.println(&amp;quot;counter1=&amp;quot;+singleton.counter1);">
+<meta property="og:updated_time" content="2017-06-22T08:58:33.614Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="一道关于类的加载题目的笔记">
-<meta name="twitter:description" content="##第一种情况 public class TmpClassLoader { public static void main(String args[]){       Singleton singleton = Singleton.getSingleton();       System.out.println(&amp;quot;counter1=&amp;quot;+singleton.counter1);">
+<meta name="twitter:description" content="第一种情况public class TmpClassLoader { public static void main(String args[]){       Singleton singleton = Singleton.getSingleton();       System.out.println(&amp;quot;counter1=&amp;quot;+singleton.counter1);">
 
 
 
@@ -319,8 +319,7 @@
       
 
       
-        <p>##第一种情况</p>
-<pre><code>public class TmpClassLoader {
+        <h2 id="第一种情况"><a href="#第一种情况" class="headerlink" title="第一种情况"></a>第一种情况</h2><pre><code>public class TmpClassLoader {
 public static void main(String args[]){
       Singleton singleton = Singleton.getSingleton();
       System.out.println(&quot;counter1=&quot;+singleton.counter1);
@@ -350,8 +349,7 @@ class Singleton {
 <li>接着public static int counter2=0，我们对其初始化为零，也就是说执行这句之前counter2=1，执行后counter2=0；</li>
 <li>初始化完毕之后我们就要调用静态方法Singleton.getSingleton(); 我们知道返回的singleton已经初始化了，所以打印输出为counter1=1，counter2=0</li>
 </ul>
-<p>##第二种情况</p>
-<p>我们对第一种情况里的Singleton类的代码调换位置</p>
+<h2 id="第二种小变化"><a href="#第二种小变化" class="headerlink" title="第二种小变化"></a>第二种小变化</h2><p>我们对第一种情况里的Singleton类的代码调换位置</p>
 <pre><code>class Singleton {      
   public static int counter1 ;
   public static int counter2 = 0;
@@ -367,8 +365,7 @@ class Singleton {
 </code></pre><p>我们仅仅调换了private static Singleton singleton = new Singleton()代码的位置，但输出结果发生了变化。</p>
 <p>此时的打印输出为counter1=1，counter2=0!!!</p>
 <p>这个变化主要在于第一种情况的步骤三四五执行顺序发生了变化，以至于结果不同。</p>
-<p>##小总结</p>
-<p>对于类的主动初始化的6种方式</p>
+<h2 id="小总结"><a href="#小总结" class="headerlink" title="小总结"></a>小总结</h2><p>对于类的主动初始化的6种方式</p>
 <p>(1)创建对象的实例：我们new对象的时候，会引发类的初始化，前提是这个类没有被初始化。</p>
 <p>(2)调用类的静态属性或者为静态属性赋值</p>
 <p>(3)调用类的静态方法</p>
@@ -473,8 +470,17 @@ class Singleton {
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview sidebar-panel sidebar-panel-active">
+      <section class="site-overview sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
                src="/images/avatar.png"
@@ -547,6 +553,22 @@ class Singleton {
 
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#第一种情况"><span class="nav-number">1.</span> <span class="nav-text">第一种情况</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#第二种小变化"><span class="nav-number">2.</span> <span class="nav-text">第二种小变化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#小总结"><span class="nav-number">3.</span> <span class="nav-text">小总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
