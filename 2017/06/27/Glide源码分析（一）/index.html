@@ -93,12 +93,16 @@
 
 
 
-<meta property="og:type" content="website">
-<meta property="og:title" content="章鱼碎碎说">
-<meta property="og:url" content="http://yoursite.com/index.html">
+<meta name="description" content="Glide     .with(this)     .load(url)     .placeholder(R.drawable.loading_spinner)     .into(myImageView); 众所周知，以上是Glide最简单的使用方法。水平不够，写这个文章，只是算作我的学习笔记吧。 ##Glide.with(this)  Glide.with()有六种重载的静态方法：  pub">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Glide源码分析（一）">
+<meta property="og:url" content="http://yoursite.com/2017/06/27/Glide源码分析（一）/index.html">
 <meta property="og:site_name" content="章鱼碎碎说">
+<meta property="og:description" content="Glide     .with(this)     .load(url)     .placeholder(R.drawable.loading_spinner)     .into(myImageView); 众所周知，以上是Glide最简单的使用方法。水平不够，写这个文章，只是算作我的学习笔记吧。 ##Glide.with(this)  Glide.with()有六种重载的静态方法：  pub">
+<meta property="og:updated_time" content="2017-06-27T09:59:37.572Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="章鱼碎碎说">
+<meta name="twitter:title" content="Glide源码分析（一）">
+<meta name="twitter:description" content="Glide     .with(this)     .load(url)     .placeholder(R.drawable.loading_spinner)     .into(myImageView); 众所周知，以上是Glide最简单的使用方法。水平不够，写这个文章，只是算作我的学习笔记吧。 ##Glide.with(this)  Glide.with()有六种重载的静态方法：  pub">
 
 
 
@@ -126,13 +130,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/"/>
+  <link rel="canonical" href="http://yoursite.com/2017/06/27/Glide源码分析（一）/"/>
 
 
 
 
 
-  <title>章鱼碎碎说</title>
+  <title>Glide源码分析（一） | 章鱼碎碎说</title>
   
 
 
@@ -157,9 +161,7 @@
     
   
 
-  <div class="container sidebar-position-left 
-   page-home 
- ">
+  <div class="container sidebar-position-left page-post-detail ">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -242,9 +244,9 @@
         <div class="content-wrap">
           <div id="content" class="content">
             
-  <section id="posts" class="posts-expand">
+
+  <div id="posts" class="posts-expand">
     
-      
 
   
 
@@ -270,9 +272,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/06/27/Glide源码分析（一）/" itemprop="url">Glide源码分析（一）</a></h1>
+          <h1 class="post-title" itemprop="name headline">Glide源码分析（一）</h1>
         
 
         <div class="post-meta">
@@ -319,35 +319,128 @@
       
 
       
-        
-          
-          Glide
+        <pre><code>Glide
     .with(this)
     .load(url)
     .placeholder(R.drawable.loading_spinner)
     .into(myImageView);
-众所周知，以上是Glide最简单的使用方法。水平不够，写这个文章，只是算作我的学习笔记吧
-          ...
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2017/06/27/Glide源码分析（一）/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
+</code></pre><p>众所周知，以上是Glide最简单的使用方法。水平不够，写这个文章，只是算作我的学习笔记吧。</p>
+<p>##Glide.with(this)</p>
+<ul>
+<li>Glide.with()有六种重载的静态方法：</li>
+</ul>
+<pre><code>public static RequestManager with(Context context) {
+    return getRetriever(context).get(context);
+    }
+
+  public static RequestManager with(Activity activity) {
+    return getRetriever(activity).get(activity);
+    }
+
+  public static RequestManager with(FragmentActivity activity) {
+    return getRetriever(activity).get(activity);
+    }
+
+  public static RequestManager with(android.app.Fragment fragment) {
+    return getRetriever(fragment.getActivity()).get(fragment);
+  }
+
+  public static RequestManager with(Fragment fragment) {
+    return getRetriever(fragment.getActivity()).get(fragment);
+  }
+
+  public static RequestManager with(View view) {
+    return getRetriever(view.getContext()).get(view);
+  }
+</code></pre><p>需要注意第六种重载方法，参数View必须是Fragment和Activity包含的View，如果这个View没有attached即没有context，这个方法将会调用失败，所以官方更推荐非特殊情况不要使用这个方法。</p>
+<ul>
+<li><p>我们继续跟随代码，走进getRetriever()方法</p>
+<pre><code>private static RequestManagerRetriever  getRetriever{
+
+Preconditions.checkNotNull(
+&quot;You cannot start a load on a not yet attached View or a  Fragment where getActivity() &quot;
+    + &quot;returns null (which usually occurs when getActivity() is called before the Fragment &quot;
+    + &quot;is attached or after the Fragment is destroyed).&quot;);
+
+  return Glide.get(context).getRequestManagerRetriever();
+  }
+</code></pre></li>
+</ul>
+<p>这才进入了正菜。Preconditions.checkNotNull()只是检测context是否为空，Preconditions类的使用值得我学习，大量的判空代码太丑陋。</p>
+<ul>
+<li><p>走进Glide.get(context)</p>
+<pre><code> public static Glide get(Context context) {
+   if (glide == null) {
+         synchronized (Glide.class) {
+   if (glide == null) {
+         initGlide(context);
+         }
+         }
+    }
+   return glide;
+}    
+</code></pre><p>Glide的get方法非常眼熟，单例模式嘛。当Glide对象未创建的时候，调用initGlide(context)方法创建Glide对象。</p>
+</li>
+<li><p>initGlide(context)</p>
+</li>
+</ul>
+<p>这个方法有将近50行代码，就不贴全部代码了。</p>
+<p>通过反射获取GeneratedAppGlideModule对象，然后获得RequestManagerRetriever.RequestManagerFactory对象等。这之前有很多涉及集合对象等操作，目前没有看懂作用，还要后续研究。</p>
+<p>获得RequestManagerRetriever.RequestManagerFactory对象后，传入GlideBuildr类中，此类采用了builder模式来创建Glide真正的对象。</p>
+<pre><code>GlideBuilder builder = new GlideBuilder()
+    .setRequestManagerFactory(factory);
+    ...
+glide = builder.build(applicationContext);
+</code></pre><p>builder.build()方法里</p>
+<pre><code>public Glide build(Context context) {
+  ...
+
+  if (engine == null) {
+        engine = new Engine(memoryCache, diskCacheFactory, diskCacheExecutor, sourceExecutor,
+        GlideExecutor.newUnlimitedSourceExecutor());
+  }
+  RequestManagerRetriever requestManagerRetriever = new RequestManagerRetriever(
+  requestManagerFactory);
+
+  return new Glide(
+      context,
+      engine,
+      memoryCache,
+      bitmapPool,
+      arrayPool,
+      requestManagerRetriever,
+      connectivityMonitorFactory,
+      logLevel,
+      defaultRequestOptions.lock());
+    }
+</code></pre><p>此时，真正的调用了Glide的构造方法</p>
+<p>其中Engine类是一个任务创建，发起，回调，管理存活和缓存的资源的类，以上代码也可看出内存和本地缓存对象等传入Engine。以后会专门分析下这个类。</p>
+<ul>
+<li>RequestManagerRetriever</li>
+</ul>
+<p>创建一个新的RequestManager或者从activity和Fragment中检索出来一个存在的RequestManager。</p>
+
+      
+    </div>
+
+    <div>
+      
         
+
       
     </div>
 
     <div>
       
-    </div>
+        
 
-    <div>
       
     </div>
 
     <div>
+      
+        
+
       
     </div>
 
@@ -355,264 +448,38 @@
       
 
       
-
-      
-
       
       
-        <div class="post-eof"></div>
+
       
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/06/22/一道关于类的加载题目的笔记/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="聂章宇">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="章鱼碎碎说">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/06/22/一道关于类的加载题目的笔记/" itemprop="url">一道关于类的加载题目的笔记</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
             
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-06-22T16:56:19+08:00">
-                2017-06-22
-              </time>
+              <a href="/2017/06/22/一道关于类的加载题目的笔记/" rel="next" title="一道关于类的加载题目的笔记">
+                <i class="fa fa-chevron-left"></i> 一道关于类的加载题目的笔记
+              </a>
             
+          </div>
 
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
             
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
+          </div>
         </div>
-      </header>
-    
-
-    <div class="post-body" itemprop="articleBody">
-
-      
       
 
       
-        
-          
-          第一种情况public class TmpClassLoader {
-public static void main(String args[]){
-      Singleton singleton = Singleton.getSingleton();
-      System.out.prin
-          ...
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2017/06/22/一道关于类的加载题目的笔记/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
       
     </footer>
   </article>
 
 
-    
-      
 
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/06/20/Fragment两种添加方式下生命周期调用的区别/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="聂章宇">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="章鱼碎碎说">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/06/20/Fragment两种添加方式下生命周期调用的区别/" itemprop="url">Fragment两种添加方式下生命周期调用的区别</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-06-20T16:50:00+08:00">
-                2017-06-20
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-          1.在replace的情况下  FragmentA显示，正常调用生命周期运行如下：    
-       
-  点击按钮2，切换到FragmentB,Fragment A 和 B  生命周期运行如下：
-      
-  点击按钮1，再次切换回FragmentA，Fragment A 和 B 生命周期
-          ...
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2017/06/20/Fragment两种添加方式下生命周期调用的区别/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
+    <div class="post-spread">
       
     </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-  </section>
-
-  
+  </div>
 
 
           </div>
@@ -620,6 +487,10 @@ public static void main(String args[]){
 
 
           
+  <div class="comments" id="comments">
+    
+  </div>
+
 
         </div>
         
@@ -826,10 +697,10 @@ public static void main(String args[]){
   
 
   
-    <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
 <script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
 
-  
+
 
   
 
