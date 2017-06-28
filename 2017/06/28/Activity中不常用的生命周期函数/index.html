@@ -93,12 +93,16 @@
 
 
 
-<meta property="og:type" content="website">
-<meta property="og:title" content="章鱼碎碎说">
-<meta property="og:url" content="http://yoursite.com/index.html">
+<meta name="description" content="前提　　昨晚在掘金上看到一篇文章https://juejin.im/post/5948dcd761ff4b006c062ac6 觉得很不错，Activity是我们开发中躲不过的四大控件之一。但其中很多方法，也许我们一般用不到的，但看了这篇文章觉得也应该了解一下。 onNewIntent(Intent intent)　　网上很多博客说Activity设置为”SingleTask”，在第一启动的时候执">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Activity中不常用的生命周期函数">
+<meta property="og:url" content="http://yoursite.com/2017/06/28/Activity中不常用的生命周期函数/index.html">
 <meta property="og:site_name" content="章鱼碎碎说">
+<meta property="og:description" content="前提　　昨晚在掘金上看到一篇文章https://juejin.im/post/5948dcd761ff4b006c062ac6 觉得很不错，Activity是我们开发中躲不过的四大控件之一。但其中很多方法，也许我们一般用不到的，但看了这篇文章觉得也应该了解一下。 onNewIntent(Intent intent)　　网上很多博客说Activity设置为”SingleTask”，在第一启动的时候执">
+<meta property="og:updated_time" content="2017-06-28T08:31:52.505Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="章鱼碎碎说">
+<meta name="twitter:title" content="Activity中不常用的生命周期函数">
+<meta name="twitter:description" content="前提　　昨晚在掘金上看到一篇文章https://juejin.im/post/5948dcd761ff4b006c062ac6 觉得很不错，Activity是我们开发中躲不过的四大控件之一。但其中很多方法，也许我们一般用不到的，但看了这篇文章觉得也应该了解一下。 onNewIntent(Intent intent)　　网上很多博客说Activity设置为”SingleTask”，在第一启动的时候执">
 
 
 
@@ -126,13 +130,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/"/>
+  <link rel="canonical" href="http://yoursite.com/2017/06/28/Activity中不常用的生命周期函数/"/>
 
 
 
 
 
-  <title>章鱼碎碎说</title>
+  <title>Activity中不常用的生命周期函数 | 章鱼碎碎说</title>
   
 
 
@@ -157,9 +161,7 @@
     
   
 
-  <div class="container sidebar-position-left 
-   page-home 
- ">
+  <div class="container sidebar-position-left page-post-detail ">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -242,9 +244,9 @@
         <div class="content-wrap">
           <div id="content" class="content">
             
-  <section id="posts" class="posts-expand">
+
+  <div id="posts" class="posts-expand">
     
-      
 
   
 
@@ -270,9 +272,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/06/28/Activity中不常用的生命周期函数/" itemprop="url">Activity中不常用的生命周期函数</a></h1>
+          <h1 class="post-title" itemprop="name headline">Activity中不常用的生命周期函数</h1>
         
 
         <div class="post-meta">
@@ -319,31 +319,54 @@
       
 
       
+        <h2 id="前提"><a href="#前提" class="headerlink" title="前提"></a>前提</h2><p>　　昨晚在掘金上看到一篇文章<a href="https://juejin.im/post/5948dcd761ff4b006c062ac6" title="超详细的生命周期图-你能回答全吗" target="_blank" rel="external">https://juejin.im/post/5948dcd761ff4b006c062ac6</a> 觉得很不错，Activity是我们开发中躲不过的四大控件之一。但其中很多方法，也许我们一般用不到的，但看了这篇文章觉得也应该了解一下。</p>
+<h2 id="onNewIntent-Intent-intent"><a href="#onNewIntent-Intent-intent" class="headerlink" title="onNewIntent(Intent intent)"></a>onNewIntent(Intent intent)</h2><p>　　网上很多博客说Activity设置为”SingleTask”，在第一启动的时候执行onCreate()—-&gt;onStart()—-&gt;onResume()等后续生命周期函数，也就时说第一次启动Activity并不会执行到onNewIntent()，而后面如果再启动Activity的时候，那就是执行onNewIntent()—-&gt;onResart()——&gt;onStart()—–&gt;onResume()。</p>
+<p>　　但是根据官方文档的解释来看，<strong>在Activity设置为”SingleTop”启动模式后，当这个Activity再次启动的时候，Activity栈顶的Activity将会重新启动而不会重新创建，onNewIntent()也将会被调用。Activity在被新的Intent启动之前会暂停onPause()，onIntent()将会在onResume()之前被调用。</strong>所以，我对网上很多博客所说表示怀疑，启动模式究竟是”SingleTask”还是”SingleTop”，onRestart()方法到底是否会调用，onRestart()方法如果被调用那对应的还有是否调用了onStop()呢？</p>
+<p>　　我重新写了一个简单的demo，代码就不贴了仅仅是将Activity设置为”SingleTop”，启动后点击图标再次启动这个Activity。</p>
+<p>　　代码执行结果我发现在重新启动目标Activity后，并没有执行onStop()方法，同理再次onRestart()也没有执行，第一次启动的时候执行onCreate()—-&gt;onStart()—-&gt;onResume()，点击图标再次启动调用onPause()—-&gt;ononNewIntent()—-&gt;onResume()。所以，网上千篇一律的博客貌似不对啊。</p>
+<p>　　再次对启动模式进行修改，我发现除了默认的standard模式，其余的模式其实都可以调用onNewIntent()方法。</p>
+<p>　　官方文档的解释还有一条就是<strong>关于onNewIntent()方法的参数Intent，当我们第二次启动目标Activity时，传递的参数Intent就是新的Intent，但如果我们去getIntent()得到的却是第一次启动的Intent。所以，如果我们想getIntent()得到第二次新的Intent需要我们在onNewIntent()方法中将参数setIntent(Intent)来更新Intent</strong>。说的可能有一点点绕，所以这里稍微贴一点点代码。</p>
+<pre><code>//第一次启动传的参数
+it.putExtra(&quot;INTENT&quot;,&quot;第一个Intent&quot;);
+
+//第二次启动传的参数
+it.putExtra(&quot;INTENT&quot;,&quot;第二个Intent&quot;);
+
+//在onNewIntent()方法中
+ @Override
+protected void onNewIntent(Intent intent) {
+    super.onNewIntent(intent);
+
+    String str=intent.getStringExtra(&quot;INTENT&quot;);
+    String oldstr=getIntent().getStringExtra(&quot;INTENT&quot;);
+    Log.e(&quot;ActivityLife&quot;,&quot;SecondActivity:  onNewIntent++&quot;+str+&quot;   old:::&quot;+oldstr);
+}
+
+//输出结果：
+E/ActivityLife: SecondActivity:  onNewIntent++第二个Intent   old:::第一个Intent
+</code></pre><p>　　综上所述，启动模式只要不是standard模式，如果目标Activity没有被销毁onDestroy()，第二次启动目标Activity都会在onResume()之前调用onNewIntent()，如果销毁了就只能老老实实onCreate()。当调用onNewIntent()时，要注意getIntent()得到的会是第一个Intent，所以要在方法里重新setIntent(Intent)更新Intent。</p>
+<h2 id="onPostCreate-Bundle-savedInstanceState"><a href="#onPostCreate-Bundle-savedInstanceState" class="headerlink" title="onPostCreate(Bundle savedInstanceState)"></a>onPostCreate(Bundle savedInstanceState)</h2>
+      
+    </div>
+
+    <div>
+      
         
-          
-          前提　　昨晚在掘金上看到一篇文章https://juejin.im/post/5948dcd761ff4b006c062ac6 觉得很不错，Activity是我们开发中躲不过的四大控件之一。但其中很多方法，也许我们一般用不到的，但看了这篇文章觉得也应该了解一下。
-onNewIntent(Intent
-          ...
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2017/06/28/Activity中不常用的生命周期函数/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
+
+      
+    </div>
+
+    <div>
+      
         
+
       
     </div>
 
     <div>
       
-    </div>
+        
 
-    <div>
-      
-    </div>
-
-    <div>
       
     </div>
 
@@ -351,387 +374,38 @@ onNewIntent(Intent
       
 
       
-
-      
-
       
       
-        <div class="post-eof"></div>
+
       
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/06/27/Glide源码分析（一）/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="聂章宇">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="章鱼碎碎说">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/06/27/Glide源码分析（一）/" itemprop="url">Glide源码分析（一）</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
             
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-06-27T18:00:13+08:00">
-                2017-06-27
-              </time>
+              <a href="/2017/06/27/Glide源码分析（一）/" rel="next" title="Glide源码分析（一）">
+                <i class="fa fa-chevron-left"></i> Glide源码分析（一）
+              </a>
             
+          </div>
 
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
             
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
+          </div>
         </div>
-      </header>
-    
-
-    <div class="post-body" itemprop="articleBody">
-
-      
       
 
       
-        
-          
-          Glide
-    .with(this)
-    .load(url)
-    .placeholder(R.drawable.loading_spinner)
-    .into(myImageView);
-众所周知，以上是Glide最简单的使用方法。水平不够，写这个文章，只是算作我的学习笔记吧
-          ...
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2017/06/27/Glide源码分析（一）/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
       
     </footer>
   </article>
 
 
-    
-      
 
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/06/22/一道关于类的加载题目的笔记/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="聂章宇">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="章鱼碎碎说">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/06/22/一道关于类的加载题目的笔记/" itemprop="url">一道关于类的加载题目的笔记</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-06-22T16:56:19+08:00">
-                2017-06-22
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-          第一种情况public class TmpClassLoader {
-public static void main(String args[]){
-      Singleton singleton = Singleton.getSingleton();
-      System.out.prin
-          ...
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2017/06/22/一道关于类的加载题目的笔记/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
+    <div class="post-spread">
       
     </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/06/20/Fragment两种添加方式下生命周期调用的区别/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="聂章宇">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="章鱼碎碎说">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/06/20/Fragment两种添加方式下生命周期调用的区别/" itemprop="url">Fragment两种添加方式下生命周期调用的区别</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-06-20T16:50:00+08:00">
-                2017-06-20
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-          1.在replace的情况下  FragmentA显示，正常调用生命周期运行如下：    
-       
-  点击按钮2，切换到FragmentB,Fragment A 和 B  生命周期运行如下：
-      
-  点击按钮1，再次切换回FragmentA，Fragment A 和 B 生命周期
-          ...
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2017/06/20/Fragment两种添加方式下生命周期调用的区别/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-  </section>
-
-  
+  </div>
 
 
           </div>
@@ -739,6 +413,10 @@ public static void main(String args[]){
 
 
           
+  <div class="comments" id="comments">
+    
+  </div>
+
 
         </div>
         
@@ -758,8 +436,17 @@ public static void main(String args[]){
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview sidebar-panel sidebar-panel-active">
+      <section class="site-overview sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
                src="/images/avatar.png"
@@ -832,6 +519,22 @@ public static void main(String args[]){
 
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前提"><span class="nav-number">1.</span> <span class="nav-text">前提</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#onNewIntent-Intent-intent"><span class="nav-number">2.</span> <span class="nav-text">onNewIntent(Intent intent)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#onPostCreate-Bundle-savedInstanceState"><span class="nav-number">3.</span> <span class="nav-text">onPostCreate(Bundle savedInstanceState)</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
@@ -945,10 +648,10 @@ public static void main(String args[]){
   
 
   
-    <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
 <script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
 
-  
+
 
   
 
