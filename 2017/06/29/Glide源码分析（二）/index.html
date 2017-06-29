@@ -93,16 +93,16 @@
 
 
 
-<meta name="description" content="前提　　昨晚在掘金上看到一篇文章https://juejin.im/post/5948dcd761ff4b006c062ac6 觉得很不错，Activity是我们开发中躲不过的四大控件之一。但其中很多方法，也许我们一般用不到的，但看了这篇文章觉得也应该了解一下。 onNewIntent(Intent intent)　　网上很多博客说Activity设置为”SingleTask”，在第一启动的时候执">
+<meta name="description" content="Glide     .with(this)     .load(url)     .placeholder(R.drawable.loading_spinner)     .into(myImageView); 　　上文我们跟随代码走过了Glide.with(this)方法得到了RequestManager对象 RequestManager　　RequestManager类的作用是Glide的请求">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Activity中不常用的生命周期函数">
-<meta property="og:url" content="http://yoursite.com/2017/06/28/Activity中不常用的生命周期函数/index.html">
+<meta property="og:title" content="Glide源码分析（二）">
+<meta property="og:url" content="http://yoursite.com/2017/06/29/Glide源码分析（二）/index.html">
 <meta property="og:site_name" content="章鱼碎碎说">
-<meta property="og:description" content="前提　　昨晚在掘金上看到一篇文章https://juejin.im/post/5948dcd761ff4b006c062ac6 觉得很不错，Activity是我们开发中躲不过的四大控件之一。但其中很多方法，也许我们一般用不到的，但看了这篇文章觉得也应该了解一下。 onNewIntent(Intent intent)　　网上很多博客说Activity设置为”SingleTask”，在第一启动的时候执">
-<meta property="og:updated_time" content="2017-06-28T10:02:19.071Z">
+<meta property="og:description" content="Glide     .with(this)     .load(url)     .placeholder(R.drawable.loading_spinner)     .into(myImageView); 　　上文我们跟随代码走过了Glide.with(this)方法得到了RequestManager对象 RequestManager　　RequestManager类的作用是Glide的请求">
+<meta property="og:updated_time" content="2017-06-29T08:42:30.982Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Activity中不常用的生命周期函数">
-<meta name="twitter:description" content="前提　　昨晚在掘金上看到一篇文章https://juejin.im/post/5948dcd761ff4b006c062ac6 觉得很不错，Activity是我们开发中躲不过的四大控件之一。但其中很多方法，也许我们一般用不到的，但看了这篇文章觉得也应该了解一下。 onNewIntent(Intent intent)　　网上很多博客说Activity设置为”SingleTask”，在第一启动的时候执">
+<meta name="twitter:title" content="Glide源码分析（二）">
+<meta name="twitter:description" content="Glide     .with(this)     .load(url)     .placeholder(R.drawable.loading_spinner)     .into(myImageView); 　　上文我们跟随代码走过了Glide.with(this)方法得到了RequestManager对象 RequestManager　　RequestManager类的作用是Glide的请求">
 
 
 
@@ -130,13 +130,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2017/06/28/Activity中不常用的生命周期函数/"/>
+  <link rel="canonical" href="http://yoursite.com/2017/06/29/Glide源码分析（二）/"/>
 
 
 
 
 
-  <title>Activity中不常用的生命周期函数 | 章鱼碎碎说</title>
+  <title>Glide源码分析（二） | 章鱼碎碎说</title>
   
 
 
@@ -255,7 +255,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/06/28/Activity中不常用的生命周期函数/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/06/29/Glide源码分析（二）/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="聂章宇">
@@ -272,7 +272,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Activity中不常用的生命周期函数</h1>
+          <h1 class="post-title" itemprop="name headline">Glide源码分析（二）</h1>
         
 
         <div class="post-meta">
@@ -284,8 +284,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-06-28T16:32:26+08:00">
-                2017-06-28
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-06-29T16:43:15+08:00">
+                2017-06-29
               </time>
             
 
@@ -319,45 +319,142 @@
       
 
       
-        <h2 id="前提"><a href="#前提" class="headerlink" title="前提"></a>前提</h2><p>　　昨晚在掘金上看到一篇文章<a href="https://juejin.im/post/5948dcd761ff4b006c062ac6" title="超详细的生命周期图-你能回答全吗" target="_blank" rel="external">https://juejin.im/post/5948dcd761ff4b006c062ac6</a> 觉得很不错，Activity是我们开发中躲不过的四大控件之一。但其中很多方法，也许我们一般用不到的，但看了这篇文章觉得也应该了解一下。</p>
-<h2 id="onNewIntent-Intent-intent"><a href="#onNewIntent-Intent-intent" class="headerlink" title="onNewIntent(Intent intent)"></a>onNewIntent(Intent intent)</h2><p>　　网上很多博客说Activity设置为”SingleTask”，在第一启动的时候执行onCreate()—-&gt;onStart()—-&gt;onResume()等后续生命周期函数，也就时说第一次启动Activity并不会执行到onNewIntent()，而后面如果再启动Activity的时候，那就是执行onNewIntent()—-&gt;onResart()——&gt;onStart()—–&gt;onResume()。</p>
-<p>　　但是根据官方文档的解释来看，<strong>在Activity设置为”SingleTop”启动模式后，当这个Activity再次启动的时候，Activity栈顶的Activity将会重新启动而不会重新创建，onNewIntent()也将会被调用。Activity在被新的Intent启动之前会暂停onPause()，onIntent()将会在onResume()之前被调用。</strong>所以，我对网上很多博客所说表示怀疑，启动模式究竟是”SingleTask”还是”SingleTop”，onRestart()方法到底是否会调用，onRestart()方法如果被调用那对应的还有是否调用了onStop()呢？</p>
-<p>　　我重新写了一个简单的demo，代码就不贴了仅仅是将Activity设置为”SingleTop”，启动后点击图标再次启动这个Activity。</p>
-<p>　　代码执行结果我发现在重新启动目标Activity后，并没有执行onStop()方法，同理再次onRestart()也没有执行，第一次启动的时候执行onCreate()—-&gt;onStart()—-&gt;onResume()，点击图标再次启动调用onPause()—-&gt;ononNewIntent()—-&gt;onResume()。所以，网上千篇一律的博客貌似不对啊。</p>
-<p>　　再次对启动模式进行修改，我发现除了默认的standard模式，其余的模式其实都可以调用onNewIntent()方法。</p>
-<p>　　官方文档的解释还有一条就是<strong>关于onNewIntent()方法的参数Intent，当我们第二次启动目标Activity时，传递的参数Intent就是新的Intent，但如果我们去getIntent()得到的却是第一次启动的Intent。所以，如果我们想getIntent()得到第二次新的Intent需要我们在onNewIntent()方法中将参数setIntent(Intent)来更新Intent</strong>。说的可能有一点点绕，所以这里稍微贴一点点代码。</p>
-<pre><code>//第一次启动传的参数
-it.putExtra(&quot;INTENT&quot;,&quot;第一个Intent&quot;);
+        <pre><code>Glide
+    .with(this)
+    .load(url)
+    .placeholder(R.drawable.loading_spinner)
+    .into(myImageView);
+</code></pre><p>　　上文我们跟随代码走过了Glide.with(this)方法得到了RequestManager对象</p>
+<h2 id="RequestManager"><a href="#RequestManager" class="headerlink" title="RequestManager"></a>RequestManager</h2><p>　　RequestManager类的作用是Glide的请求管理类，可以根据Activity，Fragment的生命周期来智能管理请求。</p>
+<p>　　那么，它是如何根据这个生命周期来只能管理请求的呢？我们可以看到RequestManager类实现了LifecycleListener接口</p>
+<pre><code>public interface LifecycleListener {
+      /**
+           * Callback for when {@link android.app.Fragment#onStart()}} or {@link
+           * android.app.Activity#onStart()} is called.
+           */
+          void onStart();
 
-//第二次启动传的参数
-it.putExtra(&quot;INTENT&quot;,&quot;第二个Intent&quot;);
+      /**
+           * Callback for when {@link android.app.Fragment#onStop()}} or {@link
+           * android.app.Activity#onStop()}} is called.
+           */
+          void onStop();
 
-//在onNewIntent()方法中
- @Override
-protected void onNewIntent(Intent intent) {
-    super.onNewIntent(intent);
-
-    String str=intent.getStringExtra(&quot;INTENT&quot;);
-    String oldstr=getIntent().getStringExtra(&quot;INTENT&quot;);
-    Log.e(&quot;ActivityLife&quot;,&quot;SecondActivity:  onNewIntent++&quot;+str+&quot;   old:::&quot;+oldstr);
+      /**
+           * Callback for when {@link android.app.Fragment#onDestroy()}} or {@link
+           * android.app.Activity#onDestroy()} is called.
+           */
+          void onDestroy();
 }
+</code></pre><p>　　onStart(),onStop()和onDestroy()，很明显正贴切我们Activity和Fragment的生命周期。我们要问的是，那是如何和我们应用中的Activity和Fragment绑定的呢？关于这一点，我们还得返回去撸Glide.with(this)里面的逻辑。</p>
+<h2 id="Glide-with-内部调用的get-方法"><a href="#Glide-with-内部调用的get-方法" class="headerlink" title="Glide.with()内部调用的get()方法"></a>Glide.with()内部调用的get()方法</h2><p>　　前文说到，我们通过Glide.with()方法里的getRetriever()获得了RequestManagerRetriever对象，然后调用它的get()方法获得了RequestManager。那我们，就看一下这个get()方法。</p>
+<p>　　get()方法对应前文提到的with()的六种重载方法，也有六种。</p>
+<h3 id="get-Context-context"><a href="#get-Context-context" class="headerlink" title="get(Context context)"></a>get(Context context)</h3><pre><code>public RequestManager get(Context context) {
+    if (context == null) {
+          throw new IllegalArgumentException(&quot;You cannot start a load on a null Context&quot;);
+    } else if (Util.isOnMainThread() &amp;&amp; !(context instanceof Application)) {
+          if (context instanceof FragmentActivity) {
+            return get((FragmentActivity) context);
+        } else if (context instanceof Activity) {
+            return get((Activity) context);
+        } else if (context instanceof ContextWrapper) {
+            return get(((ContextWrapper) context).getBaseContext());
+        }
+   }
+    return getApplicationManager(context);
+  }
+</code></pre><p>　　第一种方法，如果传入的context为其余的Activity等，会调用他们的get()方法，所以我们要看当context为ApplicationContext或在后台运行时调用的getApplicationManager(context)。</p>
+<pre><code>private RequestManager getApplicationManager(Context context) {
+  if (applicationManager == null) {
+        synchronized (this) {
+          if (applicationManager == null) {
+                Glide glide = Glide.get(context);
+                applicationManager =
+                factory.build(glide, new ApplicationLifecycle(), new EmptyRequestManagerTreeNode());
+          }
+        }
+  }
+      return applicationManager;
+  }
+</code></pre><p>　　如果看了那么多代码后，你还能记得本文开头的时候所说，RequestManager的作用是根据Activity和Fragment生命周期智能管理请求。但是这个Application是不能接受到Activity和Fragment生命周期的，所以Glide在这里用Application的生命周期来管理。也因此，我认为如果大家使用Glide如果想更大化的利用他的机制，还是不用ApplicationContext更好。</p>
+<h3 id="get-Activity-activity"><a href="#get-Activity-activity" class="headerlink" title="get(Activity activity)"></a>get(Activity activity)</h3><pre><code>//第二种方法，针对Activity
+  public RequestManager get(Activity activity) {
+    if (Util.isOnBackgroundThread()) {
+          return get(activity.getApplicationContext());
+    } else {
+          assertNotDestroyed(activity);
+          android.app.FragmentManager fm = activity.getFragmentManager();
+          return fragmentGet(activity, fm, null /*parentHint*/);
+    }
+    }
+</code></pre><h3 id="get-FragmentActivity-activity"><a href="#get-FragmentActivity-activity" class="headerlink" title="get(FragmentActivity activity)"></a>get(FragmentActivity activity)</h3><pre><code>//第三种方法，针对FragmentActivity
+  public RequestManager get(FragmentActivity activity) {
+    if (Util.isOnBackgroundThread()) {
+          return get(activity.getApplicationContext());
+    } else {
+          assertNotDestroyed(activity);
+          FragmentManager fm = activity.getSupportFragmentManager();
+          return supportFragmentGet(activity, fm, null /*parentHint*/);
+    }
+    }
 
-//输出结果：
-E/ActivityLife: SecondActivity:  onNewIntent++第二个Intent   old:::第一个Intent
-</code></pre><p>　　综上所述，启动模式只要不是standard模式，如果目标Activity没有被销毁onDestroy()，第二次启动目标Activity都会在onResume()之前调用onNewIntent()，如果销毁了就只能老老实实onCreate()。当调用onNewIntent()时，要注意getIntent()得到的会是第一个Intent，所以要在方法里重新setIntent(Intent)更新Intent。</p>
-<h2 id="onUserInteraction和onUserLeaveHint"><a href="#onUserInteraction和onUserLeaveHint" class="headerlink" title="onUserInteraction和onUserLeaveHint"></a>onUserInteraction和onUserLeaveHint</h2><p>　　这两个方法是对立方法，主要用于Activity处理触摸等事件。</p>
-<p>　　实现onUserInteraction()方法可以让你知道当Activity正在运行时，用户是否正在和设备交互。这个回调和onUserLeaveHint()的目的是帮助Activity智能的管理状态栏的通知；尤其是，帮助Activities在合适的时间取消通知。调用onUserLeaveHint()的时候都会同时调用onUserInteraction()，这样确保Activity可以得知例如用户拉下通知面板并点击了通知消息等信息。需要注意的是，onUserInteraction()被touch down的动作所调用，可能不会被touch-moved和touch-up调用。</p>
-<p>　　而onUserLeaveHint()方法在用户点击Home键使Activity进入后台时候被调用。但是如果是一个突发的电话事件，onUserLeaveHint()方法不会被调用。onUserLeaveHint()方法会在onPause()之前被调用。 </p>
-<h2 id="onPostCreate和onPostResume"><a href="#onPostCreate和onPostResume" class="headerlink" title="onPostCreate和onPostResume"></a>onPostCreate和onPostResume</h2><p>　　这两个方法，我个人认为掘金博客说的测量控件高度并不准确。根据官方文档的解释而言，应用不需要实现这两个方法，他们是用来系统代码确认Activity是否初始化等。</p>
-<p>　　对于应用开发工程师只要知道onPostCreate方法在onStart()和onRestoreInstanceState(Bundle)之后调用，即可，onPostResume方法在onResume()方法之后调用即可，至于安卓底层开发是否需要还要进一步了解。</p>
-<p>　　Google对这两个方法的使用仅见于以下Navigation Drawer的代码</p>
-<pre><code>@Override
-protected void onPostCreate(Bundle savedInstanceState) {
-    super.onPostCreate(savedInstanceState);
+//第四种方法，针对Fragment
+  public RequestManager get(Fragment fragment) {
+    Preconditions.checkNotNull(fragment.getActivity(),
+      &quot;You cannot start a load on a fragment before it is attached or after it is destroyed&quot;);
+    if (Util.isOnBackgroundThread()) {
+          return get(fragment.getActivity().getApplicationContext());
+    } else {
+          FragmentManager fm = fragment.getChildFragmentManager();
+          return supportFragmentGet(fragment.getActivity(), fm, fragment);
+    }
+    }
 
-    // Sync the toggle state after onRestoreInstanceState has occurred.
-    mDrawerToggle.syncState();
-}    
+//第五种方法，针对Fragment
+  @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
+    public RequestManager get(android.app.Fragment fragment) {
+    if (fragment.getActivity() == null) {
+          throw new IllegalArgumentException(
+              &quot;You cannot start a load on a fragment before it is attached&quot;);
+    }
+    if (Util.isOnBackgroundThread() || Build.VERSION.SDK_INT &lt; Build.VERSION_CODES.JELLY_BEAN_MR1) {
+          return get(fragment.getActivity().getApplicationContext());
+    } else {
+          android.app.FragmentManager fm = fragment.getChildFragmentManager();
+          return fragmentGet(fragment.getActivity(), fm, fragment);
+    }
+   }
+//第六种方法，针对View
+  public RequestManager get(View view) {
+    if (Util.isOnBackgroundThread()) {
+          return get(view.getContext().getApplicationContext());
+    }
+
+    Preconditions.checkNotNull(view);
+    Preconditions.checkNotNull(view.getContext(),
+    &quot;Unable to obtain a request manager for a view without a Context&quot;);
+    Activity activity = findActivity(view.getContext());
+    // The view might be somewhere else, like a service.
+    if (activity == null) {
+          return get(view.getContext().getApplicationContext());
+    }
+
+    // Support Fragments.
+    if (activity instanceof FragmentActivity) {
+          Fragment fragment = findSupportFragment(view, (FragmentActivity) activity);
+          if (fragment == null) {
+            return get(activity);
+           }
+     return get(fragment);
+    }
+
+    // Standard Fragments.
+    android.app.Fragment fragment = findFragment(view, activity);
+    if (fragment == null) {
+          return get(activity);
+    }
+    return get(fragment);
+    }
 </code></pre>
       
     </div>
@@ -394,8 +491,8 @@ protected void onPostCreate(Bundle savedInstanceState) {
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2017/06/27/Glide源码分析（一）/" rel="next" title="Glide源码分析（一）">
-                <i class="fa fa-chevron-left"></i> Glide源码分析（一）
+              <a href="/2017/06/28/Activity中不常用的生命周期函数/" rel="next" title="Activity中不常用的生命周期函数">
+                <i class="fa fa-chevron-left"></i> Activity中不常用的生命周期函数
               </a>
             
           </div>
@@ -403,10 +500,6 @@ protected void onPostCreate(Bundle savedInstanceState) {
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2017/06/29/Glide源码分析（二）/" rel="prev" title="Glide源码分析（二）">
-                Glide源码分析（二） <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -546,7 +639,7 @@ protected void onPostCreate(Bundle savedInstanceState) {
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前提"><span class="nav-number">1.</span> <span class="nav-text">前提</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#onNewIntent-Intent-intent"><span class="nav-number">2.</span> <span class="nav-text">onNewIntent(Intent intent)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#onUserInteraction和onUserLeaveHint"><span class="nav-number">3.</span> <span class="nav-text">onUserInteraction和onUserLeaveHint</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#onPostCreate和onPostResume"><span class="nav-number">4.</span> <span class="nav-text">onPostCreate和onPostResume</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#RequestManager"><span class="nav-number">1.</span> <span class="nav-text">RequestManager</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Glide-with-内部调用的get-方法"><span class="nav-number">2.</span> <span class="nav-text">Glide.with()内部调用的get()方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#get-Context-context"><span class="nav-number">2.1.</span> <span class="nav-text">get(Context context)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#get-Activity-activity"><span class="nav-number">2.2.</span> <span class="nav-text">get(Activity activity)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#get-FragmentActivity-activity"><span class="nav-number">2.3.</span> <span class="nav-text">get(FragmentActivity activity)</span></a></li></ol></li></ol></div>
             
 
           </div>
