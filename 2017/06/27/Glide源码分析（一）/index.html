@@ -93,16 +93,16 @@
 
 
 
-<meta name="description" content="Glide     .with(this)     .load(url)     .placeholder(R.drawable.loading_spinner)     .into(myImageView); 　　众所周知，以上是Glide最简单的使用方法。水平不够，写这个文章，只是算作我的学习笔记吧。 ##Glide.with(this)获得RequestManager对象Glide.with">
+<meta name="description" content="Glide     .with(this)     .load(url)     .placeholder(R.drawable.loading_spinner)     .into(myImageView); 　　众所周知，以上是Glide最简单的使用方法。水平不够，写这个文章，只是算作我的学习笔记吧。 Glide.with(this)获得RequestManager对象Glide.with()">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Glide源码分析（一）">
 <meta property="og:url" content="http://yoursite.com/2017/06/27/Glide源码分析（一）/index.html">
 <meta property="og:site_name" content="章鱼碎碎说">
-<meta property="og:description" content="Glide     .with(this)     .load(url)     .placeholder(R.drawable.loading_spinner)     .into(myImageView); 　　众所周知，以上是Glide最简单的使用方法。水平不够，写这个文章，只是算作我的学习笔记吧。 ##Glide.with(this)获得RequestManager对象Glide.with">
-<meta property="og:updated_time" content="2017-06-29T03:21:32.616Z">
+<meta property="og:description" content="Glide     .with(this)     .load(url)     .placeholder(R.drawable.loading_spinner)     .into(myImageView); 　　众所周知，以上是Glide最简单的使用方法。水平不够，写这个文章，只是算作我的学习笔记吧。 Glide.with(this)获得RequestManager对象Glide.with()">
+<meta property="og:updated_time" content="2017-06-29T03:40:54.111Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Glide源码分析（一）">
-<meta name="twitter:description" content="Glide     .with(this)     .load(url)     .placeholder(R.drawable.loading_spinner)     .into(myImageView); 　　众所周知，以上是Glide最简单的使用方法。水平不够，写这个文章，只是算作我的学习笔记吧。 ##Glide.with(this)获得RequestManager对象Glide.with">
+<meta name="twitter:description" content="Glide     .with(this)     .load(url)     .placeholder(R.drawable.loading_spinner)     .into(myImageView); 　　众所周知，以上是Glide最简单的使用方法。水平不够，写这个文章，只是算作我的学习笔记吧。 Glide.with(this)获得RequestManager对象Glide.with()">
 
 
 
@@ -325,7 +325,7 @@
     .placeholder(R.drawable.loading_spinner)
     .into(myImageView);
 </code></pre><p>　　众所周知，以上是Glide最简单的使用方法。水平不够，写这个文章，只是算作我的学习笔记吧。</p>
-<p>##Glide.with(this)获得RequestManager对象<br>Glide.with()有六种重载的静态方法：</p>
+<h2 id="Glide-with-this-获得RequestManager对象"><a href="#Glide-with-this-获得RequestManager对象" class="headerlink" title="Glide.with(this)获得RequestManager对象"></a>Glide.with(this)获得RequestManager对象</h2><p>Glide.with()有六种重载的静态方法：</p>
 <pre><code>public static RequestManager with(Context context) {
     return getRetriever(context).get(context);
     }
@@ -593,7 +593,7 @@ glide = builder.build(applicationContext);
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#getRetriever-获得RequestManagerRetriever对象"><span class="nav-number">1.</span> <span class="nav-text">getRetriever()获得RequestManagerRetriever对象</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#get-Context-context-获得Glide对象"><span class="nav-number">1.1.</span> <span class="nav-text">get(Context context)获得Glide对象</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#initGlide-context-初始化Glide"><span class="nav-number">1.1.1.</span> <span class="nav-text">initGlide(context)初始化Glide</span></a></li></ol></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Glide-with-this-获得RequestManager对象"><span class="nav-number">1.</span> <span class="nav-text">Glide.with(this)获得RequestManager对象</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#getRetriever-获得RequestManagerRetriever对象"><span class="nav-number">1.1.</span> <span class="nav-text">getRetriever()获得RequestManagerRetriever对象</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#get-Context-context-获得Glide对象"><span class="nav-number">1.1.1.</span> <span class="nav-text">get(Context context)获得Glide对象</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#initGlide-context-初始化Glide"><span class="nav-number">1.1.1.1.</span> <span class="nav-text">initGlide(context)初始化Glide</span></a></li></ol></li></ol></li></ol></li></ol></div>
             
 
           </div>
