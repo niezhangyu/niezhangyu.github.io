@@ -99,7 +99,7 @@
 <meta property="og:url" content="http://yoursite.com/2017/06/30/Glide源码分析（三）/index.html">
 <meta property="og:site_name" content="章鱼碎碎说">
 <meta property="og:description" content="Glide     .with(this)     .load(url)     .placeholder(R.drawable.loading_spinner)     .into(myImageView); 　　上文我们跟随代码走过了Glide.with(this)方法得到了RequestManager对象，并了解了RequestManager对象具备智能管理请求的作用。那么本文，就开始走进如">
-<meta property="og:updated_time" content="2017-06-30T09:54:08.968Z">
+<meta property="og:updated_time" content="2017-06-30T09:58:02.379Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Glide源码分析（三）">
 <meta name="twitter:description" content="Glide     .with(this)     .load(url)     .placeholder(R.drawable.loading_spinner)     .into(myImageView); 　　上文我们跟随代码走过了Glide.with(this)方法得到了RequestManager对象，并了解了RequestManager对象具备智能管理请求的作用。那么本文，就开始走进如">
@@ -385,7 +385,7 @@
   }
  }
 </code></pre><p>　　这两段代码涉及到很多对Request的设置，Glide有一个专门的RequestOptions类。我们这里目前先只研究最简单的的第一次请求情况。所以直奔obtainRequest()</p>
-<h2 id="SingleRequest"><a href="#SingleRequest" class="headerlink" title="SingleRequest"></a>SingleRequest</h2><p>　　obtainRequest()只有一句代码就是调用了SingleRequest的静态obtain()方法。</p>
+<h3 id="SingleRequest"><a href="#SingleRequest" class="headerlink" title="SingleRequest"></a>SingleRequest</h3><p>　　obtainRequest()只有一句代码就是调用了SingleRequest的静态obtain()方法。</p>
 
       
     </div>
@@ -570,7 +570,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#load"><span class="nav-number">1.</span> <span class="nav-text">load()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#into"><span class="nav-number">2.</span> <span class="nav-text">into()</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#创建Request"><span class="nav-number">2.1.</span> <span class="nav-text">创建Request</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SingleRequest"><span class="nav-number">3.</span> <span class="nav-text">SingleRequest</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#load"><span class="nav-number">1.</span> <span class="nav-text">load()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#into"><span class="nav-number">2.</span> <span class="nav-text">into()</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#创建Request"><span class="nav-number">2.1.</span> <span class="nav-text">创建Request</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SingleRequest"><span class="nav-number">2.2.</span> <span class="nav-text">SingleRequest</span></a></li></ol></li></ol></div>
             
 
           </div>
