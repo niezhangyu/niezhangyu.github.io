@@ -99,7 +99,7 @@
 <meta property="og:url" content="http://yoursite.com/2017/06/30/Glide源码分析（三）/index.html">
 <meta property="og:site_name" content="章鱼碎碎说">
 <meta property="og:description" content="Glide     .with(this)     .load(url)     .placeholder(R.drawable.loading_spinner)     .into(myImageView); 　　上文我们跟随代码走过了Glide.with(this)方法得到了RequestManager对象，并了解了RequestManager对象具备智能管理请求的作用。那么本文，就开始走进如">
-<meta property="og:updated_time" content="2017-06-30T09:58:02.379Z">
+<meta property="og:updated_time" content="2017-07-03T08:52:29.044Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Glide源码分析（三）">
 <meta name="twitter:description" content="Glide     .with(this)     .load(url)     .placeholder(R.drawable.loading_spinner)     .into(myImageView); 　　上文我们跟随代码走过了Glide.with(this)方法得到了RequestManager对象，并了解了RequestManager对象具备智能管理请求的作用。那么本文，就开始走进如">
@@ -385,7 +385,15 @@
   }
  }
 </code></pre><p>　　这两段代码涉及到很多对Request的设置，Glide有一个专门的RequestOptions类。我们这里目前先只研究最简单的的第一次请求情况。所以直奔obtainRequest()</p>
-<h3 id="SingleRequest"><a href="#SingleRequest" class="headerlink" title="SingleRequest"></a>SingleRequest</h3><p>　　obtainRequest()只有一句代码就是调用了SingleRequest的静态obtain()方法。</p>
+<h3 id="SingleRequest"><a href="#SingleRequest" class="headerlink" title="SingleRequest"></a>SingleRequest</h3><p>　　obtainRequest()只有一句代码就是调用了SingleRequest的静态obtain()方法。通过init()初始化了SingleRequest。所以我们知道了在第一次加载网络图片的时候，RequestBuilder的into()方法创建的Request正是SingleRequest。我们回到RequestBuilder的into()方法。</p>
+<pre><code>requestManager.track(target, request);
+
+void track(Target&lt;?&gt; target, Request request) {
+    targetTracker.track(target);
+    requestTracker.runRequest(request);
+  }
+</code></pre><p>　　targetTracker的作用是持有当前所有存活的Target，并触发Target相应的生命周期方法，方便开发者在整个请求过程的不同状态中进行回调，做相应的处理。targetTracker.track(target)方法就是将当前的target保存到集合中。</p>
+<p>　　requestTracker类是RequestManager管理请求的工具，直接操作正是requestTracker。</p>
 
       
     </div>
