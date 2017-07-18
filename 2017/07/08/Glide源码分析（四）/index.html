@@ -1,0 +1,912 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="Engine　　Engine类的load()方法有一大段英文注释总结了load方法对请求的处理帮助我们理解，大概翻译后我们再根据注释去阅读代码：  检查缓存，如果缓存存在就使用缓存 检查当前有没有存在正在使用的活跃资源优先，如果有就使用活跃资源 查当前是否有存在的load任务，如果有的话将回调ResourceCallback添加进去  　　对于活跃资源是指那些被请求不止一次而且还没有被释放的资源。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Glide源码分析（四）">
+<meta property="og:url" content="http://yoursite.com/2017/07/08/Glide源码分析（四）/index.html">
+<meta property="og:site_name" content="章鱼碎碎说">
+<meta property="og:description" content="Engine　　Engine类的load()方法有一大段英文注释总结了load方法对请求的处理帮助我们理解，大概翻译后我们再根据注释去阅读代码：  检查缓存，如果缓存存在就使用缓存 检查当前有没有存在正在使用的活跃资源优先，如果有就使用活跃资源 查当前是否有存在的load任务，如果有的话将回调ResourceCallback添加进去  　　对于活跃资源是指那些被请求不止一次而且还没有被释放的资源。">
+<meta property="og:image" content="http://orvoldspw.bkt.clouddn.com/glide_load_flow.jpg">
+<meta property="og:updated_time" content="2017-07-18T12:30:28.481Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Glide源码分析（四）">
+<meta name="twitter:description" content="Engine　　Engine类的load()方法有一大段英文注释总结了load方法对请求的处理帮助我们理解，大概翻译后我们再根据注释去阅读代码：  检查缓存，如果缓存存在就使用缓存 检查当前有没有存在正在使用的活跃资源优先，如果有就使用活跃资源 查当前是否有存在的load任务，如果有的话将回调ResourceCallback添加进去  　　对于活跃资源是指那些被请求不止一次而且还没有被释放的资源。">
+<meta name="twitter:image" content="http://orvoldspw.bkt.clouddn.com/glide_load_flow.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/07/08/Glide源码分析（四）/"/>
+
+
+
+
+
+  <title>Glide源码分析（四） | 章鱼碎碎说</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">章鱼碎碎说</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            文章
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/07/08/Glide源码分析（四）/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="聂章宇">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="章鱼碎碎说">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Glide源码分析（四）</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-08T00:00:00+08:00">
+                2017-07-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="Engine"><a href="#Engine" class="headerlink" title="Engine"></a>Engine</h2><p>　　Engine类的load()方法有一大段英文注释总结了load方法对请求的处理帮助我们理解，大概翻译后我们再根据注释去阅读代码：</p>
+<ul>
+<li>检查缓存，如果缓存存在就使用缓存</li>
+<li>检查当前有没有存在正在使用的活跃资源优先，如果有就使用活跃资源</li>
+<li>查当前是否有存在的load任务，如果有的话将回调ResourceCallback添加进去</li>
+</ul>
+<p>　　对于活跃资源是指那些被请求不止一次而且还没有被释放的资源。一旦资源被释放，资源会被存储到缓存中。如果资源被从缓存中返回给一个新的调用者使用，资源将会被重新成为活跃资源。如果资源被从缓存中清除的话，就不能回收和重复利用这个资源了。</p>
+<p>　　啰里啰嗦，一大段我们看看代码是不是如上所说呢？</p>
+<pre><code>public &lt;R&gt; LoadStatus load(
+GlideContext glideContext,Object model,Key signature,
+    int width,int height,Class&lt;?&gt; resourceClass,Class&lt;R&gt; transcodeClass,
+        Priority priority,DiskCacheStrategy diskCacheStrategy,Map&lt;Class&lt;?&gt;, Transformation&lt;?&gt;&gt; transformations,
+            boolean isTransformationRequired,Options options,boolean isMemoryCacheable,
+                boolean useUnlimitedSourceExecutorPool,boolean onlyRetrieveFromCache,ResourceCallback cb) {
+      //判断是否在主线程
+  Util.assertMainThread();
+  long startTime = LogTime.getLogTime();
+  //生成缓存资源的key值，便于查询存储缓存资源
+  EngineKey key = keyFactory.buildKey(model, signature, width, height, transformations,
+  resourceClass, transcodeClass, options);
+  //获取缓存资源
+  EngineResource&lt;?&gt; cached = loadFromCache(key, isMemoryCacheable);
+  //缓存资源不为空回调获取资源
+  if (cached != null) {
+        cb.onResourceReady(cached, DataSource.MEMORY_CACHE);
+    if (Log.isLoggable(TAG, Log.VERBOSE)) {
+      logWithTimeAndKey(&quot;Loaded resource from cache&quot;, startTime, key);
+    }
+    return null;
+  }
+  //获取当前活跃的资源
+  EngineResource&lt;?&gt; active = loadFromActiveResources(key, isMemoryCacheable);
+  if (active != null) {
+    cb.onResourceReady(active, DataSource.MEMORY_CACHE);
+    if (Log.isLoggable(TAG, Log.VERBOSE)) {
+      logWithTimeAndKey(&quot;Loaded resource from active resources&quot;, startTime, key);
+    }
+    return null;
+  }
+  //上面都没有，获取正在运行的load任务
+  EngineJob&lt;?&gt; current = jobs.get(key);
+  if (current != null) {
+        current.addCallback(cb);
+    if (Log.isLoggable(TAG, Log.VERBOSE)) {
+      logWithTimeAndKey(&quot;Added to existing load&quot;, startTime, key);
+    }
+    return new LoadStatus(cb, current);
+  }
+  //啥都没有，那我们只能自己创建任务了
+  //EngineJob是一个调度DecodeJob的任务，添加，移除资源回调，并notify回调的类
+  EngineJob&lt;R&gt; engineJob = engineJobFactory.build(key, isMemoryCacheable,useUnlimitedSourceExecutorPool);
+  //DecodeJob是处理来自缓存或者原始的资源，应用转换动画以及转码。
+  DecodeJob&lt;R&gt; decodeJob = decodeJobFactory.build(
+  glideContext,
+  model,
+  key,
+  signature,
+  width,
+  height,
+  resourceClass,
+  transcodeClass,
+  priority,
+  diskCacheStrategy,
+  transformations,
+  isTransformationRequired,
+  onlyRetrieveFromCache,
+  options,
+  engineJob);
+  //存储创建的任务
+  jobs.put(key, engineJob);
+  //添加回调
+  engineJob.addCallback(cb);
+  //线程池执行decodeJob的run()方法
+  engineJob.start(decodeJob);
+
+  if (Log.isLoggable(TAG, Log.VERBOSE)) {
+    logWithTimeAndKey(&quot;Started new load&quot;, startTime, key);
+  }
+  return new LoadStatus(cb, engineJob);
+    }
+</code></pre><p>　　注释诚不欺我，果然就是按照那个步骤来处理。我们要看下engineJob.start(decodeJob)方法。</p>
+<pre><code>public void start(DecodeJob&lt;R&gt; decodeJob) {
+      this.decodeJob = decodeJob;
+      GlideExecutor executor = decodeJob.willDecodeFromCache()
+          ? diskCacheExecutor
+              : getActiveSourceExecutor();
+      executor.execute(decodeJob);
+  }
+</code></pre><h3 id="Glide的线程池"><a href="#Glide的线程池" class="headerlink" title="Glide的线程池"></a>Glide的线程池</h3><p>　　这里看到了线程池GlideExecutor，所以插播一下对于Glide对线程池的使用，它们是在GlideBuilder的build()方法里实现的，我们前文讲过build()方法里初始化了Glide对象和参数。</p>
+<pre><code>public Glide build(Context context) {
+    //sourceExecutor用于缓存未命中Glide的加载、解码和转换任务，
+    if (sourceExecutor == null) {
+          sourceExecutor = GlideExecutor.newSourceExecutor();
+    }
+    //diskCacheExecutor用于缓存命中时的加载、解码和转换任务
+    if (diskCacheExecutor == null) {
+          diskCacheExecutor = GlideExecutor.newDiskCacheExecutor();
+    }
+        ...初始化Glide等...
+}
+
+//创建缓存未命中时候的线程池，参数calculateBestThreadCount()返回线程池大小
+public static GlideExecutor newSourceExecutor() {
+    return newSourceExecutor(calculateBestThreadCount(), DEFAULT_SOURCE_EXECUTOR_NAME,UncaughtThrowableStrategy.DEFAULT);
+  }
+
+//创建缓存命中时候的线程池，线程池大小默认为1，参数DEFAULT_DISK_CACHE_EXECUTOR_THREADS=1
+public static GlideExecutor newDiskCacheExecutor() {
+    return newDiskCacheExecutor(DEFAULT_DISK_CACHE_EXECUTOR_THREADS,DEFAULT_DISK_CACHE_EXECUTOR_NAME, UncaughtThrowableStrategy.DEFAULT);
+  }
+//获取线程池大小  根据CPU的数量和Java虚拟机中可用的处理器数量来选择合适的线程数
+public static int calculateBestThreadCount() {
+    ThreadPolicy originalPolicy = StrictMode.allowThreadDiskReads();
+    //获取CPU的信息
+    File[] cpus = null;
+    try {
+          File cpuInfo = new File(CPU_LOCATION);
+          final Pattern cpuNamePattern = Pattern.compile(CPU_NAME_REGEX);
+          cpus = cpuInfo.listFiles(new FilenameFilter() {
+        @Override
+        public boolean accept(File file, String s) {
+              return cpuNamePattern.matcher(s).matches();
+            }
+          });
+    } catch (Throwable t) {
+      if (Log.isLoggable(TAG, Log.ERROR)) {
+        Log.e(TAG, &quot;Failed to calculate accurate cpu count&quot;, t);
+      }
+    } finally {
+          StrictMode.setThreadPolicy(originalPolicy);
+    }
+    //获取cpu数量
+    int cpuCount = cpus != null ? cpus.length : 0;
+    //获取java虚拟机可用的cpu数量
+    int availableProcessors = Math.max(1, Runtime.getRuntime().availableProcessors());
+    //比较大小，最大不能超过4   MAXIMUM_AUTOMATIC_THREAD_COUNT=4
+    return Math.min(MAXIMUM_AUTOMATIC_THREAD_COUNT, Math.max(availableProcessors, cpuCount));
+      }
+</code></pre><p>　　好了，Glide的线程池就说到这里，我们说回executor.execute(decodeJob)。</p>
+<h3 id="DecodeJob的run-方法"><a href="#DecodeJob的run-方法" class="headerlink" title="DecodeJob的run()方法"></a>DecodeJob的run()方法</h3><p>　　DecodeJob的run()方法很简单，仅仅是对取消任务和任务失败进行了判断。主要是调用runWrapped()方法。</p>
+<pre><code>  @Override
+      public void run() {
+  try {
+    //如果取消了任务注销全部的初始化的参数
+      if (isCancelled) {
+        notifyFailed();
+        return;
+      }
+    //
+      runWrapped();
+  } catch (RuntimeException e) {
+    ...如果抛异常了也采取取消任务的操作...
+  }
+}　　
+</code></pre><p>　　runWrapped()方法代码见下方，主要是根据RunReason的不同而不同。RunReason为一个枚举，表示再次执行的原因。分别为INITIALIZE，指第一次调度任务；SWITCH_TO_SOURCE_SERVICE,指缓存加载失败而重新获取数据；DECODE_DATA，指获取了缓存成功但是操作和回调不在同一个线程上。</p>
+<pre><code>private void runWrapped() {
+     switch (runReason) {
+          case INITIALIZE:
+            //获取下一步执行的策略
+            stage = getNextStage(Stage.INITIALIZE);
+            //根据策略的不同，获得Generator
+            currentGenerator = getNextGenerator();
+            //load数据
+            runGenerators();
+            break;
+          case SWITCH_TO_SOURCE_SERVICE:
+            //load数据
+            runGenerators();
+            break;
+          case DECODE_DATA:
+            //处理已经load到的数据
+            decodeFromRetrievedData();
+            break;
+          default:
+            throw new IllegalStateException(&quot;Unrecognized run reason: &quot; + runReason);
+        }
+      }
+</code></pre><p>　　以上代码我们看到，当RunReason不同，调用的方法也不同。我们第一次请求网络自然是走的是RunReason.INITIALIZE情况。我们分析一下策略，它也是一个枚举，根据不同的策略从哪里读取数据。</p>
+<pre><code>private enum Stage {
+  /**第一次执行的策略*/
+  INITIALIZE,
+  /** 解码从缓存资源 */
+  RESOURCE_CACHE,
+  /** 从源数据缓存的解码 */
+  DATA_CACHE,
+  /** 从检索源解码*/
+  SOURCE,
+  /** 编码转换资源加载成功后。*/
+  ENCODE,
+  /**没有更多的可行的阶段。 */
+  FINISHED,
+    }
+</code></pre><p>　　主要加载的策略为三种：RESOURCE_CACHE，DATA_CACHE，SOURCE。runWrapped()方法中，根据不同的策略，getNextGenerator()获得不同的DataFetcherGenerator。RESOURCE_CACHE对应着ResourceCacheGenerator，DATA_CACHE对应着DataCacheGenerator，SOURCE对应着SourceGenerator。当获得不同的DataFetcherGenerator，调用runGenerators()load数据。对于RunReason==DECODE_DATA的情况，decodeFromRetrievedData()处理已经load的数据。我们先看runGenerators()。</p>
+<pre><code>private void runGenerators() {
+   currentThread = Thread.currentThread();
+   startFetchTime = LogTime.getLogTime();
+   boolean isStarted = false;
+   //
+   while (!isCancelled &amp;&amp; currentGenerator != null
+       //关键方法，调用各自的不同currentGenerator.startNext()
+       &amp;&amp; !(isStarted = currentGenerator.startNext())) {
+       //如果没有命中资源，则换策略继续执行
+         stage = getNextStage(stage);
+         currentGenerator = getNextGenerator();
+       /换策略不行重新来过
+         if (stage == Stage.SOURCE) {
+           reschedule();
+           return;
+         }
+   }
+   // 重新来过还是不行，朋友放弃吧
+   if ((stage == Stage.FINISHED || isCancelled) &amp;&amp; !isStarted) {
+         notifyFailed();
+   }
+ }    
+</code></pre><p>　　接着三大CurrentGenerator的startNext()调用了网络请求获取了图片资源，我们下文再看</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>　　网上有一个流程图总结的很好，就拿过来作为总结吧<br><img src="http://orvoldspw.bkt.clouddn.com/glide_load_flow.jpg" alt=""></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/07/05/Glide源码分析（三）/" rel="next" title="Glide源码分析（三）">
+                <i class="fa fa-chevron-left"></i> Glide源码分析（三）
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/07/11/Glide源码分析（五）/" rel="prev" title="Glide源码分析（五）">
+                Glide源码分析（五） <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.png"
+               alt="聂章宇" />
+          <p class="site-author-name" itemprop="name">聂章宇</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/niezhangyu" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="/about/" target="_blank" title="WeChat">
+                  
+                    <i class="fa fa-fw fa-wechat"></i>
+                  
+                  WeChat
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/niezhangyu" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                  Weibo
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Engine"><span class="nav-number">1.</span> <span class="nav-text">Engine</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Glide的线程池"><span class="nav-number">1.1.</span> <span class="nav-text">Glide的线程池</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DecodeJob的run-方法"><span class="nav-number">1.2.</span> <span class="nav-text">DecodeJob的run()方法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">2.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">聂章宇</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

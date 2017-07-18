@@ -93,16 +93,16 @@
 
 
 
-<meta name="description" content="Glide     .with(this)     .load(url)     .placeholder(R.drawable.loading_spinner)     .into(myImageView); 　　众所周知，以上是Glide最简单的使用方法。水平不够，写这个文章，只是算作我的学习笔记吧。 Glide.with(this)获得RequestManager对象Glide.with()">
+<meta name="description" content="Glide     .with(this)     .load(url)     .placeholder(R.drawable.loading_spinner)     .into(myImageView); 　　众所周知，以上是Glide最简单的使用方法。对于Glide，我们先简单的跟随代码走一遍，看看他如何去将图片加载。由于本文不是我完全阅读完代码总结而写，而是边看别做笔记，所以顺序或许较为">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Glide源码分析（一）">
 <meta property="og:url" content="http://yoursite.com/2017/06/27/Glide源码分析（一）/index.html">
 <meta property="og:site_name" content="章鱼碎碎说">
-<meta property="og:description" content="Glide     .with(this)     .load(url)     .placeholder(R.drawable.loading_spinner)     .into(myImageView); 　　众所周知，以上是Glide最简单的使用方法。水平不够，写这个文章，只是算作我的学习笔记吧。 Glide.with(this)获得RequestManager对象Glide.with()">
-<meta property="og:updated_time" content="2017-06-29T03:40:54.111Z">
+<meta property="og:description" content="Glide     .with(this)     .load(url)     .placeholder(R.drawable.loading_spinner)     .into(myImageView); 　　众所周知，以上是Glide最简单的使用方法。对于Glide，我们先简单的跟随代码走一遍，看看他如何去将图片加载。由于本文不是我完全阅读完代码总结而写，而是边看别做笔记，所以顺序或许较为">
+<meta property="og:updated_time" content="2017-07-18T12:28:24.840Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Glide源码分析（一）">
-<meta name="twitter:description" content="Glide     .with(this)     .load(url)     .placeholder(R.drawable.loading_spinner)     .into(myImageView); 　　众所周知，以上是Glide最简单的使用方法。水平不够，写这个文章，只是算作我的学习笔记吧。 Glide.with(this)获得RequestManager对象Glide.with()">
+<meta name="twitter:description" content="Glide     .with(this)     .load(url)     .placeholder(R.drawable.loading_spinner)     .into(myImageView); 　　众所周知，以上是Glide最简单的使用方法。对于Glide，我们先简单的跟随代码走一遍，看看他如何去将图片加载。由于本文不是我完全阅读完代码总结而写，而是边看别做笔记，所以顺序或许较为">
 
 
 
@@ -284,7 +284,7 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-06-27T18:00:13+08:00">
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-06-27T00:00:00+08:00">
                 2017-06-27
               </time>
             
@@ -324,7 +324,7 @@
     .load(url)
     .placeholder(R.drawable.loading_spinner)
     .into(myImageView);
-</code></pre><p>　　众所周知，以上是Glide最简单的使用方法。水平不够，写这个文章，只是算作我的学习笔记吧。</p>
+</code></pre><p>　　众所周知，以上是Glide最简单的使用方法。对于Glide，我们先简单的跟随代码走一遍，看看他如何去将图片加载。由于本文不是我完全阅读完代码总结而写，而是边看别做笔记，所以顺序或许较为杂乱，仅作为我的学习笔记。</p>
 <h2 id="Glide-with-this-获得RequestManager对象"><a href="#Glide-with-this-获得RequestManager对象" class="headerlink" title="Glide.with(this)获得RequestManager对象"></a>Glide.with(this)获得RequestManager对象</h2><p>Glide.with()有六种重载的静态方法：</p>
 <pre><code>public static RequestManager with(Context context) {
     return getRetriever(context).get(context);
@@ -451,8 +451,8 @@ glide = builder.build(applicationContext);
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2017/06/28/Activity中不常用的生命周期函数/" rel="prev" title="Activity中不常用的生命周期函数">
-                Activity中不常用的生命周期函数 <i class="fa fa-chevron-right"></i>
+              <a href="/2017/06/28/Glide源码分析（二）/" rel="prev" title="Glide源码分析（二）">
+                Glide源码分析（二） <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -525,7 +525,7 @@ glide = builder.build(applicationContext);
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-count">9</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>

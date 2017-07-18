@@ -253,7 +253,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/06/30/Glide源码分析（三）/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/07/17/Glide源码分析（六）/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="聂章宇">
@@ -272,7 +272,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2017/06/30/Glide源码分析（三）/" itemprop="url">Glide源码分析（三）</a></h1>
+                <a class="post-title-link" href="/2017/07/17/Glide源码分析（六）/" itemprop="url">Glide源码分析（六）</a></h1>
         
 
         <div class="post-meta">
@@ -284,8 +284,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-06-30T14:12:43+08:00">
-                2017-06-30
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-17T00:00:00+08:00">
+                2017-07-17
               </time>
             
 
@@ -321,16 +321,13 @@
       
         
           
-          Glide
-    .with(this)
-    .load(url)
-    .placeholder(R.drawable.loading_spinner)
-    .into(myImageView);
-　　上文我们跟随代码走过了Glide.with(this)方法得到了RequestMan
+          　　调用DataCacheGenerator的startNext()后执行了FileLoader的loadData()方法
+@Override
+public void loadData(Priority priority, DataCallback&lt;? super Data&gt; callb
           ...
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2017/06/30/Glide源码分析（三）/#more" rel="contents">
+            <a class="btn" href="/2017/07/17/Glide源码分析（六）/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -376,7 +373,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/06/29/Glide源码分析（二）/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/07/11/Glide源码分析（五）/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="聂章宇">
@@ -395,7 +392,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2017/06/29/Glide源码分析（二）/" itemprop="url">Glide源码分析（二）</a></h1>
+                <a class="post-title-link" href="/2017/07/11/Glide源码分析（五）/" itemprop="url">Glide源码分析（五）</a></h1>
         
 
         <div class="post-meta">
@@ -407,8 +404,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-06-29T16:43:15+08:00">
-                2017-06-29
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-11T00:00:00+08:00">
+                2017-07-11
               </time>
             
 
@@ -444,16 +441,11 @@
       
         
           
-          Glide
-    .with(this)
-    .load(url)
-    .placeholder(R.drawable.loading_spinner)
-    .into(myImageView);
-　　上文我们跟随代码走过了Glide.with(this)方法得到了RequestMan
+          　　上文说到三大CurrentGenerator的startNext()调用了网络请求获取了图片资源，分别为ResourceCacheGenerator未经处理的资源数据缓存文件，DataCacheGenerator经过处理的资源数据缓存文件(采样转换等处理)和SourceGenerator原始数据
           ...
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2017/06/29/Glide源码分析（二）/#more" rel="contents">
+            <a class="btn" href="/2017/07/11/Glide源码分析（五）/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -499,7 +491,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/06/28/Activity中不常用的生命周期函数/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/07/08/Glide源码分析（四）/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="聂章宇">
@@ -518,7 +510,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2017/06/28/Activity中不常用的生命周期函数/" itemprop="url">Activity中不常用的生命周期函数</a></h1>
+                <a class="post-title-link" href="/2017/07/08/Glide源码分析（四）/" itemprop="url">Glide源码分析（四）</a></h1>
         
 
         <div class="post-meta">
@@ -530,8 +522,253 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-06-28T16:32:26+08:00">
-                2017-06-28
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-08T00:00:00+08:00">
+                2017-07-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+          Engine　　Engine类的load()方法有一大段英文注释总结了load方法对请求的处理帮助我们理解，大概翻译后我们再根据注释去阅读代码：
+
+检查缓存，如果缓存存在就使用缓存
+检查当前有没有存在正在使用的活跃资源优先，如果有就使用活跃资源
+查当前是否有存在的load任务，如果有的话将回调Res
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/07/08/Glide源码分析（四）/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/07/05/Glide源码分析（三）/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="聂章宇">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="章鱼碎碎说">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/07/05/Glide源码分析（三）/" itemprop="url">Glide源码分析（三）</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-05T00:00:00+08:00">
+                2017-07-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+          Glide
+    .with(this)
+    .load(url)
+    .placeholder(R.drawable.loading_spinner)
+    .into(myImageView);
+　　上文我们跟随代码走过了Glide.with(this)方法得到了RequestMan
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/07/05/Glide源码分析（三）/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/07/02/Activity中不常用的生命周期函数/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="聂章宇">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="章鱼碎碎说">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/07/02/Activity中不常用的生命周期函数/" itemprop="url">Activity中不常用的生命周期函数</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-02T00:00:00+08:00">
+                2017-07-02
               </time>
             
 
@@ -572,7 +809,130 @@ onNewIntent(Intent
           ...
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2017/06/28/Activity中不常用的生命周期函数/#more" rel="contents">
+            <a class="btn" href="/2017/07/02/Activity中不常用的生命周期函数/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/06/28/Glide源码分析（二）/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="聂章宇">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="章鱼碎碎说">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/06/28/Glide源码分析（二）/" itemprop="url">Glide源码分析（二）</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-06-28T00:00:00+08:00">
+                2017-06-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+          Glide
+    .with(this)
+    .load(url)
+    .placeholder(R.drawable.loading_spinner)
+    .into(myImageView);
+　　上文我们跟随代码走过了Glide.with(this)方法得到了RequestMan
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/06/28/Glide源码分析（二）/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -649,7 +1009,7 @@ onNewIntent(Intent
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-06-27T18:00:13+08:00">
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-06-27T00:00:00+08:00">
                 2017-06-27
               </time>
             
@@ -691,7 +1051,7 @@ onNewIntent(Intent
     .load(url)
     .placeholder(R.drawable.loading_spinner)
     .into(myImageView);
-　　众所周知，以上是Glide最简单的使用方法。水平不够，写这个文章，只是算作我的学习笔
+　　众所周知，以上是Glide最简单的使用方法。对于Glide，我们先简单的跟随代码走一
           ...
           <!--noindex-->
           <div class="post-button text-center">
@@ -772,7 +1132,7 @@ onNewIntent(Intent
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-06-22T16:56:19+08:00">
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-06-22T00:00:00+08:00">
                 2017-06-22
               </time>
             
@@ -893,7 +1253,7 @@ public static void main(String args[]){
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-06-20T16:50:00+08:00">
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-06-20T00:00:00+08:00">
                 2017-06-20
               </time>
             
@@ -1020,7 +1380,7 @@ public static void main(String args[]){
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-count">9</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
