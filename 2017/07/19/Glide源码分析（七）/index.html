@@ -93,16 +93,16 @@
 
 
 
-<meta name="description" content="前提：啰哩啰嗦了六篇文章才刚刚把Glide的一次加载网络图片的流程说完。但其实，前面我们还是忽视了很多细节，比如Glide加载了网络图片后是如何缓存到内存中的呢，当存在缓存Glide又是如何去加载的呢？本文将会走进Glide的内存缓存操作。由于我们前文是跟着url走过一遍所以我们其实已经读到过读取缓存的代码，只是没有专门撸一遍罢了。 ##Engine读取缓存　　由于我们前文是跟着url走过一遍">
+<meta name="description" content="前提：啰哩啰嗦了六篇文章才刚刚把Glide的一次加载网络图片的流程说完。但其实，前面我们还是忽视了很多细节，比如Glide加载了网络图片后是如何缓存到内存中的呢，当存在缓存Glide又是如何去加载的呢？本文将会走进Glide的内存缓存操作。由于我们前文是跟着url走过一遍所以我们其实已经读到过读取缓存的代码，只是没有专门撸一遍罢了。 Engine读取缓存　　由于我们前文是跟着url走过一遍所以">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Glide源码分析（七）">
 <meta property="og:url" content="http://yoursite.com/2017/07/19/Glide源码分析（七）/index.html">
 <meta property="og:site_name" content="章鱼碎碎说">
-<meta property="og:description" content="前提：啰哩啰嗦了六篇文章才刚刚把Glide的一次加载网络图片的流程说完。但其实，前面我们还是忽视了很多细节，比如Glide加载了网络图片后是如何缓存到内存中的呢，当存在缓存Glide又是如何去加载的呢？本文将会走进Glide的内存缓存操作。由于我们前文是跟着url走过一遍所以我们其实已经读到过读取缓存的代码，只是没有专门撸一遍罢了。 ##Engine读取缓存　　由于我们前文是跟着url走过一遍">
-<meta property="og:updated_time" content="2017-07-19T14:39:56.874Z">
+<meta property="og:description" content="前提：啰哩啰嗦了六篇文章才刚刚把Glide的一次加载网络图片的流程说完。但其实，前面我们还是忽视了很多细节，比如Glide加载了网络图片后是如何缓存到内存中的呢，当存在缓存Glide又是如何去加载的呢？本文将会走进Glide的内存缓存操作。由于我们前文是跟着url走过一遍所以我们其实已经读到过读取缓存的代码，只是没有专门撸一遍罢了。 Engine读取缓存　　由于我们前文是跟着url走过一遍所以">
+<meta property="og:updated_time" content="2017-07-19T14:43:18.842Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Glide源码分析（七）">
-<meta name="twitter:description" content="前提：啰哩啰嗦了六篇文章才刚刚把Glide的一次加载网络图片的流程说完。但其实，前面我们还是忽视了很多细节，比如Glide加载了网络图片后是如何缓存到内存中的呢，当存在缓存Glide又是如何去加载的呢？本文将会走进Glide的内存缓存操作。由于我们前文是跟着url走过一遍所以我们其实已经读到过读取缓存的代码，只是没有专门撸一遍罢了。 ##Engine读取缓存　　由于我们前文是跟着url走过一遍">
+<meta name="twitter:description" content="前提：啰哩啰嗦了六篇文章才刚刚把Glide的一次加载网络图片的流程说完。但其实，前面我们还是忽视了很多细节，比如Glide加载了网络图片后是如何缓存到内存中的呢，当存在缓存Glide又是如何去加载的呢？本文将会走进Glide的内存缓存操作。由于我们前文是跟着url走过一遍所以我们其实已经读到过读取缓存的代码，只是没有专门撸一遍罢了。 Engine读取缓存　　由于我们前文是跟着url走过一遍所以">
 
 
 
@@ -320,7 +320,7 @@
 
       
         <p>　　前提：啰哩啰嗦了六篇文章才刚刚把Glide的一次加载网络图片的流程说完。但其实，前面我们还是忽视了很多细节，比如Glide加载了网络图片后是如何缓存到内存中的呢，当存在缓存Glide又是如何去加载的呢？本文将会走进Glide的内存缓存操作。由于我们前文是跟着url走过一遍所以我们其实已经读到过读取缓存的代码，只是没有专门撸一遍罢了。</p>
-<p>##Engine读取缓存<br>　　由于我们前文是跟着url走过一遍所以我们读到过读取缓存的代码，因此我们先去寻找如何读取缓存。这里又不得不提到Engine类，我们还记得它是一个任务创建，发起，回调，管理存活和缓存的资源的重要类。在Engine.load()方法里，我们曾经说过我们回头再说，那么现在说。</p>
+<h2 id="Engine读取缓存"><a href="#Engine读取缓存" class="headerlink" title="Engine读取缓存"></a>Engine读取缓存</h2><p>　　由于我们前文是跟着url走过一遍所以我们读到过读取缓存的代码，因此我们先去寻找如何读取缓存。这里又不得不提到Engine类，我们还记得它是一个任务创建，发起，回调，管理存活和缓存的资源的重要类。在Engine.load()方法里，我们曾经说过我们回头再说，那么现在说。</p>
 <pre><code>public &lt;R&gt; LoadStatus load(...很多参数...) {
            ...
 
@@ -385,8 +385,7 @@
     return result;
   }
 </code></pre><p>　　在getEngineResourceFromCache()方法中，第一句就是cache.remove(key)。那么这个cache是什么呢？一个MemoryCache接口，它的实现类是LruResourceCache类。我们这里就不说Lru算法了，当得到这个Resource后，在上面代码里通过activeResources将其保存为活跃资源使其不被Lru算法回收。上述的这些LruResourceCache等等，都是在GlideBuilder类的buidl()方法里初始化的，这些我们前文曾经提到过。</p>
-<p>##Engine写入缓存</p>
-<p>　　上一篇文章里我们说到DecodeJob解析图片网络资源后通过notifyComplete()方法回调EngineJob的onResourceReady方法后向主线程发了一个Handler。在handleResultOnMainThread()方法中，</p>
+<h2 id="Engine写入缓存"><a href="#Engine写入缓存" class="headerlink" title="Engine写入缓存"></a>Engine写入缓存</h2><p>　　上一篇文章里我们说到DecodeJob解析图片网络资源后通过notifyComplete()方法回调EngineJob的onResourceReady方法后向主线程发了一个Handler。在handleResultOnMainThread()方法中，</p>
 <pre><code>void handleResultOnMainThread() {
   ....
   engineResource = engineResourceFactory.build(resource, isCacheable);
@@ -544,8 +543,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview sidebar-panel sidebar-panel-active">
+      <section class="site-overview sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
                src="/images/avatar.png"
@@ -618,6 +626,22 @@
 
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Engine读取缓存"><span class="nav-number">1.</span> <span class="nav-text">Engine读取缓存</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Engine写入缓存"><span class="nav-number">2.</span> <span class="nav-text">Engine写入缓存</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
