@@ -93,16 +93,16 @@
 
 
 
-<meta name="description" content="第一种情况public class TmpClassLoader { public static void main(String args[]){       Singleton singleton = Singleton.getSingleton();       System.out.println(&amp;quot;counter1=&amp;quot;+singleton.counter1);">
+<meta name="description" content="前提　　上文说到缓存的读取和写入，Glide采用Lru算法自然还有磁盘缓存。今天在撸磁盘缓存的时候，我发现自己在前面撸图片加载的流程的时候还是忽视了一些东西。如此看来，源码不仅仅是读一遍就可以的，就像小时候读一些经典名著要反复的读，书读百遍其义自见。 磁盘缓存的写入流程　　我们还记得，在Glide第一次加载网络图片资源时使用的是SourceGenerator，从网络加载成功后会调用DataCach">
 <meta property="og:type" content="article">
-<meta property="og:title" content="一道关于类的加载题目的笔记">
-<meta property="og:url" content="http://yoursite.com/2017/06/22/一道关于类的加载题目的笔记/index.html">
+<meta property="og:title" content="Glide源码分析（八）">
+<meta property="og:url" content="http://yoursite.com/2017/07/20/Glide源码分析（八）/index.html">
 <meta property="og:site_name" content="章鱼碎碎说">
-<meta property="og:description" content="第一种情况public class TmpClassLoader { public static void main(String args[]){       Singleton singleton = Singleton.getSingleton();       System.out.println(&amp;quot;counter1=&amp;quot;+singleton.counter1);">
-<meta property="og:updated_time" content="2017-07-18T12:28:10.747Z">
+<meta property="og:description" content="前提　　上文说到缓存的读取和写入，Glide采用Lru算法自然还有磁盘缓存。今天在撸磁盘缓存的时候，我发现自己在前面撸图片加载的流程的时候还是忽视了一些东西。如此看来，源码不仅仅是读一遍就可以的，就像小时候读一些经典名著要反复的读，书读百遍其义自见。 磁盘缓存的写入流程　　我们还记得，在Glide第一次加载网络图片资源时使用的是SourceGenerator，从网络加载成功后会调用DataCach">
+<meta property="og:updated_time" content="2017-07-20T14:13:18.555Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="一道关于类的加载题目的笔记">
-<meta name="twitter:description" content="第一种情况public class TmpClassLoader { public static void main(String args[]){       Singleton singleton = Singleton.getSingleton();       System.out.println(&amp;quot;counter1=&amp;quot;+singleton.counter1);">
+<meta name="twitter:title" content="Glide源码分析（八）">
+<meta name="twitter:description" content="前提　　上文说到缓存的读取和写入，Glide采用Lru算法自然还有磁盘缓存。今天在撸磁盘缓存的时候，我发现自己在前面撸图片加载的流程的时候还是忽视了一些东西。如此看来，源码不仅仅是读一遍就可以的，就像小时候读一些经典名著要反复的读，书读百遍其义自见。 磁盘缓存的写入流程　　我们还记得，在Glide第一次加载网络图片资源时使用的是SourceGenerator，从网络加载成功后会调用DataCach">
 
 
 
@@ -130,13 +130,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2017/06/22/一道关于类的加载题目的笔记/"/>
+  <link rel="canonical" href="http://yoursite.com/2017/07/20/Glide源码分析（八）/"/>
 
 
 
 
 
-  <title>一道关于类的加载题目的笔记 | 章鱼碎碎说</title>
+  <title>Glide源码分析（八） | 章鱼碎碎说</title>
   
 
 
@@ -255,7 +255,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/06/22/一道关于类的加载题目的笔记/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/07/20/Glide源码分析（八）/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="聂章宇">
@@ -272,7 +272,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">一道关于类的加载题目的笔记</h1>
+          <h1 class="post-title" itemprop="name headline">Glide源码分析（八）</h1>
         
 
         <div class="post-meta">
@@ -284,8 +284,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-06-22T00:00:00+08:00">
-                2017-06-22
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-20T00:00:00+08:00">
+                2017-07-20
               </time>
             
 
@@ -319,66 +319,70 @@
       
 
       
-        <h2 id="第一种情况"><a href="#第一种情况" class="headerlink" title="第一种情况"></a>第一种情况</h2><pre><code>public class TmpClassLoader {
-public static void main(String args[]){
-      Singleton singleton = Singleton.getSingleton();
-      System.out.println(&quot;counter1=&quot;+singleton.counter1);
-      System.out.println(&quot;counter2=&quot;+singleton.counter2);
+        <h2 id="前提"><a href="#前提" class="headerlink" title="前提"></a>前提</h2><p>　　上文说到缓存的读取和写入，Glide采用Lru算法自然还有磁盘缓存。今天在撸磁盘缓存的时候，我发现自己在前面撸图片加载的流程的时候还是忽视了一些东西。如此看来，源码不仅仅是读一遍就可以的，就像小时候读一些经典名著要反复的读，书读百遍其义自见。</p>
+<h2 id="磁盘缓存的写入流程"><a href="#磁盘缓存的写入流程" class="headerlink" title="磁盘缓存的写入流程"></a>磁盘缓存的写入流程</h2><p>　　我们还记得，在Glide第一次加载网络图片资源时使用的是SourceGenerator，从网络加载成功后会调用DataCacheGenerator加载回调最终加载到ImageView等控件上。在图片从网络获取后SourceGenerator的回调方法onDataReady()中</p>
+<pre><code>public void onDataReady(Object data) {
+    DiskCacheStrategy diskCacheStrategy = helper.getDiskCacheStrategy();
+    if (data != null &amp;&amp; diskCacheStrategy.isDataCacheable(loadData.fetcher.getDataSource())) {
+      dataToCache = data;
+      // We might be being called back on someone else&apos;s thread. Before doing anything, we should
+      // reschedule to get back onto Glide&apos;s thread.
+      cb.reschedule();
+    } else {
+      cb.onDataFetcherReady(loadData.sourceKey, data, loadData.fetcher,
+          loadData.fetcher.getDataSource(), originalKey);
+    }
   }
-}
+</code></pre><p>　　我在前文忽视了dataToCache = data这一句代码。正是因为这句设置，当再次回调SourceGenerator的startNext()方法的时候，才会因为dataToCache不为null，从而去执行SourceGenerator的cacheData()方法。</p>
+<pre><code>public boolean startNext() {
+    if (dataToCache != null) {
+          Object data = dataToCache;
+          dataToCache = null;
+          cacheData(data);
+    }
+        ....
+  }    
 
-class Singleton {
-      private static Singleton singleton = new Singleton();
-      public static int counter1 ;
-      public static int counter2 = 0;
-      private Singleton() {
-          counter1++;
-          counter2++;
-      }
-      public static Singleton getSingleton() {
-              return singleton;
-      }
-}
-</code></pre><p>   打印输出为counter1=1，counter2=0</p>
-<p>   步骤为：    </p>
-<ul>
-<li>当执行TmpClassLoader第一句的时候，因为我们还没有对Singleton对象进行加载和连接，所以我们首先会对其进行加载和连接。在加载和连接阶段我们会给静态变量赋予默认初始值。此时，sington=null，counter1=0，counter2=0    </li>
-<li>加载和连接完毕之后，我们再进行初始化工作。初始化工作从上往下依次执行，注意此时并没有调用Singleton.getSingleton();</li>
-<li>首先Singleton singleton = Singleton.getSingleton();执行构造方法内部逻辑，进行++，此时counter1=1，counter2 =1 ；</li>
-<li>然后执行public static int counter1，我们并没有对它进行初始化；</li>
-<li>接着public static int counter2=0，我们对其初始化为零，也就是说执行这句之前counter2=1，执行后counter2=0；</li>
-<li>初始化完毕之后我们就要调用静态方法Singleton.getSingleton(); 我们知道返回的singleton已经初始化了，所以打印输出为counter1=1，counter2=0</li>
-</ul>
-<h2 id="第二种小变化"><a href="#第二种小变化" class="headerlink" title="第二种小变化"></a>第二种小变化</h2><p>我们对第一种情况里的Singleton类的代码调换位置</p>
-<pre><code>class Singleton {      
-  public static int counter1 ;
-  public static int counter2 = 0;
-  private static Singleton singleton = new Singleton();
-  private Singleton() {
-      counter1++;
-      counter2++;
+private void cacheData(Object dataToCache) {
+    long startTime = LogTime.getLogTime();
+    try {
+          Encoder&lt;Object&gt; encoder = helper.getSourceEncoder(dataToCache);
+        //注释1
+          DataCacheWriter&lt;Object&gt; writer =
+              new DataCacheWriter&lt;&gt;(encoder, dataToCache, helper.getOptions());
+          originalKey = new DataCacheKey(loadData.sourceKey, helper.getSignature());
+          helper.getDiskCache().put(originalKey, writer);
+          if (Log.isLoggable(TAG, Log.VERBOSE)) {
+           ...
+          }
+    } finally {
+          loadData.fetcher.cleanup();
+    }
+
+    sourceCacheGenerator =
+        new DataCacheGenerator(Collections.singletonList(loadData.sourceKey), helper, this);
   }
-  public static Singleton getSingleton() {
-      return singleton;
-  }                                                
-}
-</code></pre><p>我们仅仅调换了private static Singleton singleton = new Singleton()代码的位置，但输出结果发生了变化。</p>
-<p>此时的打印输出为counter1=1，counter2=0!!!</p>
-<p>这个变化主要在于第一种情况的步骤三四五执行顺序发生了变化，以至于结果不同。</p>
-<h2 id="小总结"><a href="#小总结" class="headerlink" title="小总结"></a>小总结</h2><p>对于类的主动初始化的6种方式</p>
-<p>(1)创建对象的实例：我们new对象的时候，会引发类的初始化，前提是这个类没有被初始化。</p>
-<p>(2)调用类的静态属性或者为静态属性赋值</p>
-<p>(3)调用类的静态方法</p>
-<p>(4)通过class文件反射创建对象</p>
-<p>(5)初始化一个类的子类：使用子类的时候先初始化父类</p>
-<p>(6)java虚拟机启动时被标记为启动类的类：就是我们的main方法所在的类<br>只有上面6种情况才是主动使用，也只有上面六种情况的发生才会引发类的初始化。</p>
-<p>同时我们需要注意下面几个Tips:</p>
-<p>1)在同一个类加载器下面只能初始化类一次,如果已经初始化了就不必要初始化了.<br>这里多说一点，为什么只初始化一次呢？因为我们上面讲到过类加载的最终结果就是在堆中存有唯一一个Class对象，我们通过Class对象找到<br>类的相关信息。唯一一个Class对象说明了类只需要初始化一次即可，如果再次初始化就会出现多个Class对象，这样和唯一相违背了。</p>
-<p>2)在编译的时候能确定下来的静态变量(编译常量),不会对类进行初始化;</p>
-<p>3)在编译时无法确定下来的静态变量(运行时常量),会对类进行初始化;</p>
-<p>4)如果这个类没有被加载和连接的话,那就需要进行加载和连接</p>
-<p>5)如果这个类有父类并且这个父类没有被初始化,则先初始化父类.</p>
-<p>6)如果类中存在初始化语句,依次执行初始化语句.</p>
+</code></pre><p>　　我们要注意注释1开始后的代码。这里先创建了一个负责写入磁盘的DataCacheWriter对象。然后根生成DataCacheKey键对象。helper.getDiskCache().put(originalKey, writer)就是写入磁盘缓存的关键。我们等会会专门对这一点进行详细的了解。</p>
+<h2 id="磁盘缓存的读取流程"><a href="#磁盘缓存的读取流程" class="headerlink" title="磁盘缓存的读取流程"></a>磁盘缓存的读取流程</h2><p>　　磁盘缓存的读取，自然就在DataCacheGenerator的startNext（）方法中，和SourceGenerator的代码几乎对应。</p>
+<pre><code>public boolean startNext() {
+    while (modelLoaders == null || !hasNextModelLoader()) {
+          sourceIdIndex++;
+          if (sourceIdIndex &gt;= cacheKeys.size()) {
+            return false;
+         }
+          Key sourceId = cacheKeys.get(sourceIdIndex);
+          Key originalKey = new DataCacheKey(sourceId, helper.getSignature());
+          cacheFile = helper.getDiskCache().get(originalKey);
+          ．．．
+    }
+</code></pre><h2 id="磁盘缓存"><a href="#磁盘缓存" class="headerlink" title="磁盘缓存"></a>磁盘缓存</h2><p>helper.getDiskCache().get(originalKey)</p>
+<p>LazyDiskCacheProvider.getDiskCache()</p>
+<p>DiskLruCacheFactory.build()</p>
+<p>DiskLruCacheWrapper.get(cacheDir, diskCacheSize)</p>
+<p>DiskLruCacheWrapper.put()</p>
+<p>getDiskCache()</p>
+<p>DiskLruCache.open</p>
+<p>未完待续。</p>
 
       
     </div>
@@ -415,8 +419,8 @@ class Singleton {
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2017/06/20/Fragment两种添加方式下生命周期调用的区别/" rel="next" title="Fragment两种添加方式下生命周期调用的区别">
-                <i class="fa fa-chevron-left"></i> Fragment两种添加方式下生命周期调用的区别
+              <a href="/2017/07/19/Glide源码分析（七）/" rel="next" title="Glide源码分析（七）">
+                <i class="fa fa-chevron-left"></i> Glide源码分析（七）
               </a>
             
           </div>
@@ -424,10 +428,6 @@ class Singleton {
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2017/06/27/Glide源码分析（一）/" rel="prev" title="Glide源码分析（一）">
-                Glide源码分析（一） <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -567,7 +567,7 @@ class Singleton {
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#第一种情况"><span class="nav-number">1.</span> <span class="nav-text">第一种情况</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#第二种小变化"><span class="nav-number">2.</span> <span class="nav-text">第二种小变化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#小总结"><span class="nav-number">3.</span> <span class="nav-text">小总结</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前提"><span class="nav-number">1.</span> <span class="nav-text">前提</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#磁盘缓存的写入流程"><span class="nav-number">2.</span> <span class="nav-text">磁盘缓存的写入流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#磁盘缓存的读取流程"><span class="nav-number">3.</span> <span class="nav-text">磁盘缓存的读取流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#磁盘缓存"><span class="nav-number">4.</span> <span class="nav-text">磁盘缓存</span></a></li></ol></div>
             
 
           </div>
