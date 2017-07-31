@@ -101,7 +101,7 @@
 <meta property="og:description" content="前提　　前文分析Glide的时候，说到了DiskLruCache磁盘缓存方案。缓存对于提升一个App的性能至关重要，Android官方推荐使用LruCache+DiskLruCache对图片进行两级缓存。DiskLruCache的作者为JakeWharton大神，本文将对其进行学习分析。 基本概念　　DiskLruCache以key-value的形式在磁盘上缓存，支持一对多，线程安全，不支持多进程">
 <meta property="og:image" content="http://orvoldspw.bkt.clouddn.com/DiskLruCache1.png">
 <meta property="og:image" content="http://orvoldspw.bkt.clouddn.com/DiskLruCache2.png">
-<meta property="og:updated_time" content="2017-07-30T13:16:47.581Z">
+<meta property="og:updated_time" content="2017-07-31T22:59:07.827Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="DiskLruCache源码分析">
 <meta name="twitter:description" content="前提　　前文分析Glide的时候，说到了DiskLruCache磁盘缓存方案。缓存对于提升一个App的性能至关重要，Android官方推荐使用LruCache+DiskLruCache对图片进行两级缓存。DiskLruCache的作者为JakeWharton大神，本文将对其进行学习分析。 基本概念　　DiskLruCache以key-value的形式在磁盘上缓存，支持一对多，线程安全，不支持多进程">
@@ -549,9 +549,11 @@ private Editor currentEditor;
 
 /** 最近提交的编辑条目. */
 private long sequenceNumber;
-</code></pre><h2 id="写入缓存"><a href="#写入缓存" class="headerlink" title="写入缓存"></a>写入缓存</h2><p>　　缓存的写入需要通过内部类Editor类,调用edit(String key)获取此key对应的Editor对象。</p>
+</code></pre><h2 id="写入缓存"><a href="#写入缓存" class="headerlink" title="写入缓存"></a>写入缓存</h2><p>　　缓存的写入需要通过内部类Editor类,调用edit(String key)获取此key对应的Editor对象。代码浅显易懂，如下所示：</p>
 <pre><code>private synchronized Editor edit(String key, long expectedSequenceNumber) throws IOException {
+  //检测journalWriter是否为空
   checkNotClosed();
+  //key值不能有[a-z0-9_-]{1,64}以外的值
   validateKey(key);
   Entry entry = lruEntries.get(key);
   if (expectedSequenceNumber != ANY_SEQUENCE_NUMBER &amp;&amp; (entry == null
@@ -573,7 +575,144 @@ private long sequenceNumber;
   journalWriter.flush();
   return editor;
 }
-</code></pre>
+</code></pre><p>　　    edit()方法获取Editor对象，Editor为内部类，主要方法如下：</p>
+<pre><code>1.newInputStream()方法获取对应index的输入流，对应最后一次写入的数据，如果没有数据返回null
+
+2.newOutputStream()方法获取一个输出流，将需要缓存的数据写入此OutputStream。如果在写入的过程中需要错误，Editor将会中止，返回的OutputStream不会抛出IOException
+
+3.commit()提交此次操作
+
+4.abort()放弃此次操作
+</code></pre><p>　　每次操作完成后，必须要调用commit()或者abort()，他们最终都会调用completeEdit()方法</p>
+<pre><code>private synchronized void completeEdit(Editor editor, boolean success) throws IOException {
+  Entry entry = editor.entry;
+  if (entry.currentEditor != editor) {
+        throw new IllegalStateException();
+  }
+
+  // If this edit is creating the entry for the first time, every index must have a value.
+  if (success &amp;&amp; !entry.readable) {
+        for (int i = 0; i &lt; valueCount; i++) {
+          if (!editor.written[i]) {
+                editor.abort();
+                throw new IllegalStateException(&quot;Newly created entry didn&apos;t create value for index &quot; + i);
+          }
+  if (!entry.getDirtyFile(i).exists()) {
+    editor.abort();
+    return;
+      }
+       }
+    }
+  // 将写入成功的临时文件重命名为正式的缓存文件
+  for (int i = 0; i &lt; valueCount; i++) {
+        File dirty = entry.getDirtyFile(i);
+        if (success) {
+          if (dirty.exists()) {
+                File clean = entry.getCleanFile(i);
+                dirty.renameTo(clean);
+                long oldLength = entry.lengths[i];
+                long newLength = clean.length();
+                entry.lengths[i] = newLength;
+                size = size - oldLength + newLength;
+          }
+        } else {
+          deleteIfExists(dirty);
+        }
+      }
+   // 多余的操作数量+1，用来判断是否需要重建 journal 文件用的
+      redundantOpCount++;
+   entry.currentEditor = null;
+   if (entry.readable | success) {
+        entry.readable = true;
+        journalWriter.write(CLEAN + &apos; &apos; + entry.key + entry.getLengths() + &apos;\n&apos;);
+     if (success) {
+       // 如果在此之前有获取过该 Entry 的 Snapshot ，这一步操作将使 Snapshot 过期
+      entry.sequenceNumber = nextSequenceNumber++;
+     }
+   } else {// 写入 REMOVE 记录，便于下次移除临时文件
+        lruEntries.remove(entry.key);
+        journalWriter.write(REMOVE + &apos; &apos; + entry.key + &apos;\n&apos;);
+   }
+  journalWriter.flush();
+   // journal 文件清理
+  if (size &gt; maxSize || journalRebuildRequired()) {
+        executorService.submit(cleanupCallable);
+    }
+   }
+</code></pre><h2 id="读取缓存"><a href="#读取缓存" class="headerlink" title="读取缓存"></a>读取缓存</h2><p>　　读取缓存主要依靠get()方法，拿到key所对应的缓存，然后打开所有关联的文件输入流，同时将操作记录写入journal文件或重建journal文件，最终返回Snapshot对象。我们读取缓存通过Snapshot对象获取输入流。</p>
+<pre><code>public synchronized Snapshot get(String key) throws IOException {
+  checkNotClosed();
+  validateKey(key);
+  Entry entry = lruEntries.get(key);
+  if (entry == null) {
+        return null;
+  }
+
+  if (!entry.readable) {
+        return null;
+  }
+
+  // Open all streams eagerly to guarantee that we see a single published
+  // snapshot. If we opened streams lazily then the streams could come
+  // from different edits.
+  InputStream[] ins = new InputStream[valueCount];
+  try {
+        for (int i = 0; i &lt; valueCount; i++) {
+          ins[i] = new FileInputStream(entry.getCleanFile(i));
+        }
+  } catch (FileNotFoundException e) {
+    // A file must have been deleted manually!
+        for (int i = 0; i &lt; valueCount; i++) {
+          if (ins[i] != null) {
+                Util.closeQuietly(ins[i]);
+          } else {
+                break;
+          }
+        }
+        return null;
+  }
+
+  redundantOpCount++;
+  journalWriter.append(READ + &apos; &apos; + key + &apos;\n&apos;);
+  //判断是否需要重建Journal文件
+  if (journalRebuildRequired()) {
+        executorService.submit(cleanupCallable);
+  }
+
+  return new Snapshot(key, entry.sequenceNumber, ins, entry.lengths);
+}
+</code></pre><h2 id="清理空间"><a href="#清理空间" class="headerlink" title="清理空间"></a>清理空间</h2><p>　　删除缓存的remove()方法我们就不说了，具体变化不大。但我们要说说所有操作缓存的方法里面的executorService.submit(cleanupCallable)，采用了线程池异步操作，具体实现如下：</p>
+<pre><code>final ThreadPoolExecutor executorService =
+  new ThreadPoolExecutor(0, 1, 60L, TimeUnit.SECONDS, new LinkedBlockingQueue&lt;Runnable&gt;());
+
+private final Callable&lt;Void&gt; cleanupCallable = new Callable&lt;Void&gt;() {
+public Void call() throws Exception {
+  synchronized (DiskLruCache.this) {
+    if (journalWriter == null) {
+      return null; // Closed.
+    }
+    trimToSize();
+    if (journalRebuildRequired()) {
+      rebuildJournal();
+      redundantOpCount = 0;
+    }
+  }
+  return null;
+ }
+};
+  //trimeToSize基于LinkedHashMap将eldest项目移除,如同LRU算法
+  private void trimToSize() throws IOException {
+    while (size &gt; maxSize) {
+      Map.Entry&lt;String, Entry&gt; toEvict = lruEntries.entrySet().iterator().next();
+      remove(toEvict.getKey());
+    }
+  }
+</code></pre><h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>　　1.DiskLruCache使用了两个内部类，一个是DiskLruCache.Editor用来写入缓存信息，一个是DiskLruCache.Snapshot用来读取缓存文件。</p>
+<p>　　2.缓存文件主要分为CLEAN文件和DIRTY文件，CLEAN文件为缓存完成的文件，DIRTY文件用来临时标记正在修改，READ文件代表读取一条数据，REMOVE文件代表删除一条数据</p>
+<p>　　3.journal文件记录了哪些关键字已经被缓存、哪些正在修改、哪些正在读取。</p>
+<p>　　4.缓存入口同LruCache一样使用LinkedHashMap，省去了LRU算法的实现。</p>
+<p>　　5.整理空间和重写journal操作留给了线程池单线程异步处理，一是防止了主线程阻塞问题，二是解决了同步问题。</p>
+
       
     </div>
 
@@ -757,7 +896,7 @@ private long sequenceNumber;
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前提"><span class="nav-number">1.</span> <span class="nav-text">前提</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基本概念"><span class="nav-number">2.</span> <span class="nav-text">基本概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#创建缓存对象"><span class="nav-number">3.</span> <span class="nav-text">创建缓存对象</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#open"><span class="nav-number">3.1.</span> <span class="nav-text">open()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#rebuildJournal"><span class="nav-number">3.2.</span> <span class="nav-text">rebuildJournal()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#readJournal"><span class="nav-number">3.3.</span> <span class="nav-text">readJournal()</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#readJournalLine"><span class="nav-number">3.3.1.</span> <span class="nav-text">readJournalLine()</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#processJournal"><span class="nav-number">3.4.</span> <span class="nav-text">processJournal()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#LinkedHasLinkedHashMaphMap-lruEntries和Entry-entry"><span class="nav-number">3.5.</span> <span class="nav-text">LinkedHasLinkedHashMaphMap lruEntries和Entry entry</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#写入缓存"><span class="nav-number">4.</span> <span class="nav-text">写入缓存</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前提"><span class="nav-number">1.</span> <span class="nav-text">前提</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基本概念"><span class="nav-number">2.</span> <span class="nav-text">基本概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#创建缓存对象"><span class="nav-number">3.</span> <span class="nav-text">创建缓存对象</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#open"><span class="nav-number">3.1.</span> <span class="nav-text">open()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#rebuildJournal"><span class="nav-number">3.2.</span> <span class="nav-text">rebuildJournal()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#readJournal"><span class="nav-number">3.3.</span> <span class="nav-text">readJournal()</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#readJournalLine"><span class="nav-number">3.3.1.</span> <span class="nav-text">readJournalLine()</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#processJournal"><span class="nav-number">3.4.</span> <span class="nav-text">processJournal()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#LinkedHasLinkedHashMaphMap-lruEntries和Entry-entry"><span class="nav-number">3.5.</span> <span class="nav-text">LinkedHasLinkedHashMaphMap lruEntries和Entry entry</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#写入缓存"><span class="nav-number">4.</span> <span class="nav-text">写入缓存</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#读取缓存"><span class="nav-number">5.</span> <span class="nav-text">读取缓存</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#清理空间"><span class="nav-number">6.</span> <span class="nav-text">清理空间</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">7.</span> <span class="nav-text">总结</span></a></li></ol></div>
             
 
           </div>
