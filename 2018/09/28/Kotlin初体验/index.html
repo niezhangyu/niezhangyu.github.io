@@ -93,17 +93,17 @@
 
 
 
-<meta name="description" content="#Kotlin使用报告 ​    新公司使用kotlin开发安卓项目，在学习使用两周后，做一个总结。本篇文章直接从开发的角度来讲述Kotlin，引入Kotlin的知识点。 ​    对于安卓而言，最多的交互场景为Activity，因此我们需要继承BaseActivity或者AppCompatActivity。对于继承，Kotlin有其自己的冒号来表达继承关系： 1class MainActivit">
+<meta name="description" content="​    新公司使用kotlin开发安卓项目，在学习使用两周后，做一个总结。本篇文章直接从开发的角度来讲述Kotlin，引入Kotlin的知识点。 ​    对于安卓而言，最多的交互场景为Activity，因此我们需要继承BaseActivity或者AppCompatActivity。对于继承，Kotlin有其自己的冒号来表达继承关系： 1class MainActivity : AppCompa">
 <meta property="og:type" content="article">
-<meta property="og:title" content="章鱼碎碎说">
+<meta property="og:title" content="Kotlin初体验">
 <meta property="og:url" content="http://yoursite.com/2018/09/28/Kotlin初体验/index.html">
 <meta property="og:site_name" content="章鱼碎碎说">
-<meta property="og:description" content="#Kotlin使用报告 ​    新公司使用kotlin开发安卓项目，在学习使用两周后，做一个总结。本篇文章直接从开发的角度来讲述Kotlin，引入Kotlin的知识点。 ​    对于安卓而言，最多的交互场景为Activity，因此我们需要继承BaseActivity或者AppCompatActivity。对于继承，Kotlin有其自己的冒号来表达继承关系： 1class MainActivit">
+<meta property="og:description" content="​    新公司使用kotlin开发安卓项目，在学习使用两周后，做一个总结。本篇文章直接从开发的角度来讲述Kotlin，引入Kotlin的知识点。 ​    对于安卓而言，最多的交互场景为Activity，因此我们需要继承BaseActivity或者AppCompatActivity。对于继承，Kotlin有其自己的冒号来表达继承关系： 1class MainActivity : AppCompa">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-09-28T12:49:41.501Z">
+<meta property="og:updated_time" content="2018-09-28T13:19:02.059Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="章鱼碎碎说">
-<meta name="twitter:description" content="#Kotlin使用报告 ​    新公司使用kotlin开发安卓项目，在学习使用两周后，做一个总结。本篇文章直接从开发的角度来讲述Kotlin，引入Kotlin的知识点。 ​    对于安卓而言，最多的交互场景为Activity，因此我们需要继承BaseActivity或者AppCompatActivity。对于继承，Kotlin有其自己的冒号来表达继承关系： 1class MainActivit">
+<meta name="twitter:title" content="Kotlin初体验">
+<meta name="twitter:description" content="​    新公司使用kotlin开发安卓项目，在学习使用两周后，做一个总结。本篇文章直接从开发的角度来讲述Kotlin，引入Kotlin的知识点。 ​    对于安卓而言，最多的交互场景为Activity，因此我们需要继承BaseActivity或者AppCompatActivity。对于继承，Kotlin有其自己的冒号来表达继承关系： 1class MainActivity : AppCompa">
 
 
 
@@ -137,7 +137,7 @@
 
 
 
-  <title> | 章鱼碎碎说</title>
+  <title>Kotlin初体验 | 章鱼碎碎说</title>
   
 
 
@@ -273,7 +273,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline"></h1>
+          <h1 class="post-title" itemprop="name headline">Kotlin初体验</h1>
         
 
         <div class="post-meta">
@@ -285,7 +285,7 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-09-28T11:29:24+08:00">
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-09-28T21:17:58+08:00">
                 2018-09-28
               </time>
             
@@ -320,8 +320,7 @@
       
 
       
-        <p>#Kotlin使用报告</p>
-<p>​    新公司使用kotlin开发安卓项目，在学习使用两周后，做一个总结。本篇文章直接从开发的角度来讲述Kotlin，引入Kotlin的知识点。</p>
+        <p>​    新公司使用kotlin开发安卓项目，在学习使用两周后，做一个总结。本篇文章直接从开发的角度来讲述Kotlin，引入Kotlin的知识点。</p>
 <p>​    对于安卓而言，最多的交互场景为Activity，因此我们需要继承BaseActivity或者AppCompatActivity。对于继承，Kotlin有其自己的冒号来表达继承关系：</p>
 <figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MainActivity</span> : <span class="type">AppCompatActivity</span></span>()</span><br></pre></td></tr></table></figure>
 <p>​    对于Activity而言，我们习惯内部用静态方法来调用启动，于Java同样不同，静态方法这样表达：</p>
@@ -339,7 +338,6 @@
 <figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">doSomething</span><span class="params">(参数：参数类型)</span></span> : 返回值类型&#123;&#125;</span><br></pre></td></tr></table></figure>
 <p>​    在安卓里我们要定义很多点击事件，Kotlin的Lambdas多样化我还在学习理解中。对于点击事件而言，如下</p>
 <figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">view.setOnClickListener(Object : OnClickListner&#123;</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onClick</span><span class="params">(v:<span class="type">View</span>)</span></span>&#123;</span><br><span class="line">        <span class="comment">//TODO someThing</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;)</span><br><span class="line"><span class="comment">//lambda表达式通过参数的形式被定义在箭头的左边（即被圆括号包围的内容），然后在箭头的右边返回结果值，对于设置点击事件如下转换</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">setOnClickListener</span><span class="params">(listener:(<span class="type">View</span>)</span></span> -&gt; <span class="built_in">Unit</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">//即</span></span><br><span class="line">view.setOnClickListener(&#123;</span><br><span class="line">    view -&gt;<span class="comment">//TODO something</span></span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line"><span class="comment">//如果左边的参数view没有用到。我们还可以省略左边的参数</span></span><br><span class="line">view.setOnClickListener(&#123;</span><br><span class="line">    <span class="comment">//TODO something</span></span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line"><span class="comment">//如果这个函数的最后一个参数还是一个函数，我们可以把这个函数移动到圆括号外面</span></span><br><span class="line">view.setOnClickListener()&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//如果这个函数只有一个参数，我们可以省略这个圆括号，所以最终</span></span><br><span class="line">view.setOnClickListener&#123;</span><br><span class="line">    <span class="comment">//TODO something</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>​    kotlin</p>
 
       
     </div>
