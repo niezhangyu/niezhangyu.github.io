@@ -99,7 +99,8 @@
 <meta property="og:url" content="http://yoursite.com/2017/07/02/Activity中不常用的生命周期函数/index.html">
 <meta property="og:site_name" content="章鱼碎碎说">
 <meta property="og:description" content="前提　　昨晚在掘金上看到一篇文章https://juejin.im/post/5948dcd761ff4b006c062ac6 觉得很不错，Activity是我们开发中躲不过的四大控件之一。但其中很多方法，也许我们一般用不到的，但看了这篇文章觉得也应该了解一下。 onNewIntent(Intent intent)　　网上很多博客说Activity设置为”SingleTask”，在第一启动的时候执">
-<meta property="og:updated_time" content="2017-07-18T12:29:02.218Z">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-07-18T12:29:02.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Activity中不常用的生命周期函数">
 <meta name="twitter:description" content="前提　　昨晚在掘金上看到一篇文章https://juejin.im/post/5948dcd761ff4b006c062ac6 觉得很不错，Activity是我们开发中躲不过的四大控件之一。但其中很多方法，也许我们一般用不到的，但看了这篇文章觉得也应该了解一下。 onNewIntent(Intent intent)　　网上很多博客说Activity设置为”SingleTask”，在第一启动的时候执">
@@ -319,7 +320,7 @@
       
 
       
-        <h2 id="前提"><a href="#前提" class="headerlink" title="前提"></a>前提</h2><p>　　昨晚在掘金上看到一篇文章<a href="https://juejin.im/post/5948dcd761ff4b006c062ac6" title="超详细的生命周期图-你能回答全吗" target="_blank" rel="external">https://juejin.im/post/5948dcd761ff4b006c062ac6</a> 觉得很不错，Activity是我们开发中躲不过的四大控件之一。但其中很多方法，也许我们一般用不到的，但看了这篇文章觉得也应该了解一下。</p>
+        <h2 id="前提"><a href="#前提" class="headerlink" title="前提"></a>前提</h2><p>　　昨晚在掘金上看到一篇文章<a href="https://juejin.im/post/5948dcd761ff4b006c062ac6" title="超详细的生命周期图-你能回答全吗" target="_blank" rel="noopener">https://juejin.im/post/5948dcd761ff4b006c062ac6</a> 觉得很不错，Activity是我们开发中躲不过的四大控件之一。但其中很多方法，也许我们一般用不到的，但看了这篇文章觉得也应该了解一下。</p>
 <h2 id="onNewIntent-Intent-intent"><a href="#onNewIntent-Intent-intent" class="headerlink" title="onNewIntent(Intent intent)"></a>onNewIntent(Intent intent)</h2><p>　　网上很多博客说Activity设置为”SingleTask”，在第一启动的时候执行onCreate()—-&gt;onStart()—-&gt;onResume()等后续生命周期函数，也就时说第一次启动Activity并不会执行到onNewIntent()，而后面如果再启动Activity的时候，那就是执行onNewIntent()—-&gt;onResart()——&gt;onStart()—–&gt;onResume()。</p>
 <p>　　但是根据官方文档的解释来看，<strong>在Activity设置为”SingleTop”启动模式后，当这个Activity再次启动的时候，Activity栈顶的Activity将会重新启动而不会重新创建，onNewIntent()也将会被调用。Activity在被新的Intent启动之前会暂停onPause()，onIntent()将会在onResume()之前被调用。</strong>所以，我对网上很多博客所说表示怀疑，启动模式究竟是”SingleTask”还是”SingleTop”，onRestart()方法到底是否会调用，onRestart()方法如果被调用那对应的还有是否调用了onStop()呢？</p>
 <p>　　我重新写了一个简单的demo，代码就不贴了仅仅是将Activity设置为”SingleTop”，启动后点击图标再次启动这个Activity。</p>
@@ -478,7 +479,7 @@ protected void onPostCreate(Bundle savedInstanceState) {
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">15</span>
+                <span class="site-state-item-count">16</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -569,7 +570,7 @@ protected void onPostCreate(Bundle savedInstanceState) {
         <div class="copyright" >
   
   &copy; 
-  <span itemprop="copyrightYear">2017</span>
+  <span itemprop="copyrightYear">2018</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>

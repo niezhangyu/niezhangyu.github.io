@@ -99,7 +99,8 @@
 <meta property="og:url" content="http://yoursite.com/2017/07/20/Glide源码分析（八）/index.html">
 <meta property="og:site_name" content="章鱼碎碎说">
 <meta property="og:description" content="前提　　上文说到缓存的读取和写入，Glide采用Lru算法自然还有磁盘缓存。今天在撸磁盘缓存的时候，我发现自己在前面撸图片加载的流程的时候还是忽视了一些东西。如此看来，源码不仅仅是读一遍就可以的，就像小时候读一些经典名著要反复的读，书读百遍其义自见。 磁盘缓存的写入流程　　我们还记得，在Glide第一次加载网络图片资源时使用的是SourceGenerator，从网络加载成功后会调用DataCach">
-<meta property="og:updated_time" content="2017-07-21T12:16:59.031Z">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-07-21T12:16:58.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Glide源码分析（八）">
 <meta name="twitter:description" content="前提　　上文说到缓存的读取和写入，Glide采用Lru算法自然还有磁盘缓存。今天在撸磁盘缓存的时候，我发现自己在前面撸图片加载的流程的时候还是忽视了一些东西。如此看来，源码不仅仅是读一遍就可以的，就像小时候读一些经典名著要反复的读，书读百遍其义自见。 磁盘缓存的写入流程　　我们还记得，在Glide第一次加载网络图片资源时使用的是SourceGenerator，从网络加载成功后会调用DataCach">
@@ -445,7 +446,7 @@ DiskCache getDiskCache() {
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2017/07/26/DiskLruCache源码分析/" rel="prev" title="DiskLruCache源码分析">
+              <a href="/2017/08/01/DiskLruCache源码分析/" rel="prev" title="DiskLruCache源码分析">
                 DiskLruCache源码分析 <i class="fa fa-chevron-right"></i>
               </a>
             
@@ -519,7 +520,7 @@ DiskCache getDiskCache() {
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">15</span>
+                <span class="site-state-item-count">16</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -610,7 +611,7 @@ DiskCache getDiskCache() {
         <div class="copyright" >
   
   &copy; 
-  <span itemprop="copyrightYear">2017</span>
+  <span itemprop="copyrightYear">2018</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
